@@ -13,26 +13,16 @@
 
 		session_start();
 
-		$db = mysqli_connect("localhost", "root", "")
-            or die("Impossible de se connecter : " . mysql_error());
+		include("config_sql.php");
 
-        $res = mysqli_query($db, "SHOW DATABASES");
+        $req_id="SELECT * FROM `handicap`.`authentification` WHERE pseudo='".$_SESSION['pseudo']."'";
+        $result_id=$bdd->query($req_id);
+        $data=$result_id->fetch();
 
-        $row = mysqli_fetch_assoc($res);
 
-        $bdd = mysqli_select_db($db, 'handicap');
-        if (!$bdd) {
-            die ('Impossible de selectionner la base de donnees ' . mysql_error());}
-
-        $req="SELECT * FROM `handicap`.`authentification` WHERE pseudo='".$_SESSION['pseudo']."'";
-        $result=mysqli_query($db, $req);
-        $data=mysqli_fetch_assoc($result);
-
-       
-
-        $req2="SELECT * FROM `handicap`.`donnees` WHERE id='".$data['id']."'";
-        $result2=mysqli_query($db, $req2);
-        $data2=mysqli_fetch_assoc($result2);
+        $req_datas="SELECT * FROM `handicap`.`donnees` WHERE id='".$data['id']."'";
+        $result_datas=$bdd->query($req_datas);
+        $data2=$result_datas->fetch();
 
 	?>
 	   <div id="conteneur">
@@ -43,31 +33,7 @@
 			<tr>
 				<td height="800px" width="15%" id="banniere">
 				<?php
-					if (!isset($_SESSION['droit'])){
-						echo"<form id='authentification' action='accueil.php' method='post'>
-						CONNEXION</br></br>
-						<div>
-							<input type='text' name='identifiant' id='identifiant' placeholder='Identifiant'>
-							<input type='password' name='password' id='password' placeholder='Mot de passe'>
-							<input type='submit' id='valid_authentif' value='Valider'>
-						</div>
-						</br>
-						<a href='inscription.php'>S'incrire</a>
-						</form>";
-					}
-					else if($_SESSION['droit']==1){
-						echo "Bonjour ".$_SESSION['pseudo']."\n
-						<form id='deconnexion' action='accueil.php' method='post'>
-						<input type='submit' name='deconnexion' value='Se déconnecter'>
-						</form>"
-						;
-						echo "<form id='modif_passwd' action='modif_passwd.php' method='post'>
-						<input type='submit' name='modif_passwd' value='Modifier mot de passe'>
-						</form>";
-						echo "</br><p><a href='donnees.php' id='onglet'>Consulter et modifier vos données</a></p>";
-						echo "</br><p><a href='politique.php' id='onglet'>Définir la politique de partage</a></p>";
-
-					}
+					include("verif_droit.php");
 				?>
 
 
@@ -107,13 +73,13 @@
 						`champ4`='".$_POST['champ4']."',
 						`champ5`='".$_POST['champ5']."'
 						WHERE `id`='".$data['id']."'";
-						$update_res=mysqli_query($db, $update)
+						$update_res=$bdd->query($update)
 							or die("Impossible de mettre à jour : " . mysql_error());
 						echo "<img width=20px height=20px src='valide.png'>  Données enregistrées";
 					}
 					else if(isset($_POST['suppr'])){
 						$req_suppr="DELETE FROM `handicap`.`donnees` WHERE `id`='".$data['id']."'";
-						$suppr=mysqli_query($db, $req_suppr)
+						$suppr=$bdd->query($req_suppr)
 							or die("Impossible de supprimer : " . mysql_error());
 					}
 					?>
