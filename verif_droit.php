@@ -21,7 +21,7 @@ if (!isset($_SESSION['droit'])){
 						echo "<form id='modif_passwd' action='modif_passwd.php' method='post'>
 						<input type='submit' name='modif_passwd' value='Modifier mot de passe'>
 						</form>";
-						echo "</br><p><a href='donnees.php' id='onglet'>Consulter et modifier vos données</a></p>";
+						echo "</br><p><a href='accueil.php?data=donnees' id='onglet'>Consulter et modifier vos données</a></p>";
 						echo "</br><p><a href='politique.php' id='onglet'>Définir la politique de partage</a></p>";
 
 					}

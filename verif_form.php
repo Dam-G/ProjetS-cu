@@ -33,7 +33,7 @@ if (isset($_POST['deconnexion'])) {
 				$res_auth = $bdd->query($req_auth);
 				$line = $res_auth->fetch();
 				if(password_verify($password, $line['passwd'])){
-					session_start();
+					//session_start();
 					$_SESSION['pseudo']=$id;
 					$_SESSION['droit']=$line['droit'];
 				}

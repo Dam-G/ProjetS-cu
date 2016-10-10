@@ -15,7 +15,6 @@
 		include('verif_form.php');
 
 	?>
-	   <div id="conteneur">
 		<table width="100%">			
 			<tr>
 				<td colspan="2" height="200px" id="entete"><a href="accueil.php" id="liens">ACCUEIL</a> - <a href="statistiques.php" id="liens">STATISTIQUES PUBLIQUES</a></td>
@@ -26,12 +25,17 @@
 				include("verif_droit.php");
 				?>
 				</td>
-				<td id="corps">Ici, prochainement, une présentation de notre site !</td>
+				<td id="corps">
+				<?php
+					if (isset($_GET['data']) && $_GET['data']=='donnees'){
+						include('donnees.php');					
+					}
+					else echo'<p>Ici, prochainement, une présentation de notre site !</p>';
+				 ?></td>
 			</tr>
 			<tr>
 				<td colspan="2" height="200px" id="truc4" >Footer</td>
 			</tr>
 		</table>
-	   </div>
 	</body>
 </html>
