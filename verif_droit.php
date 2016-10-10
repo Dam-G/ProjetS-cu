@@ -4,7 +4,7 @@ if (!isset($_SESSION['droit'])){
 						echo"<form id='authentification' action='accueil.php' method='post'>
 						CONNEXION</br></br>
 						<div>
-							<input type='text' name='identifiant' id='identifiant' placeholder='Identifiant'>
+							<input type='text' name='email' id='email' placeholder='Adresse e-mail'>
 							<input type='password' name='password' id='password' placeholder='Mot de passe'>
 							<input type='submit' id='valid_authentif' value='Valider'>
 						</div>
