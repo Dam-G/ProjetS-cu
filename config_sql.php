@@ -9,4 +9,8 @@ catch (Exception $e)
         die('Erreur : ' . $e->getMessage());
 }
 
+	include("membre.class.php");
+	include("patient.class.php");
+	include("soignant.class.php");
+
 ?>
