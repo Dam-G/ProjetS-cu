@@ -27,7 +27,7 @@
 				</td>
 				<td id="corps">
 				<?php
-					if (isset($_GET['data']) && $_GET['data']=='donnees' && (isset($_SESSION['droit']){
+					if (isset($_GET['data']) && $_GET['data']=='donnees'){
 						include('donnees.php');					
 					}
 					else echo'<p>Ici, prochainement, une présentation de notre site !</p>';

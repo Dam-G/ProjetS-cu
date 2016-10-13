@@ -5,41 +5,18 @@ if (isset($_POST['deconnexion'])) {
 	session_destroy();
 }
 
-		if (isset($_POST['pseudo']) or isset($_POST['email']) or (isset($_POST['new_passwd']))){ //A remplacer par les submit ??
+		if (isset($_POST['pseudo']) or isset($_POST['identifiant']) or (isset($_POST['new_passwd']))){
 
 			if(isset($_POST['pseudo'])){
 
-				$nom=$_POST['nom'];
-				$prenom=$_POST['prenom'];
-				$date_naissance=$_POST['date_naissance'];
-				$adresse=$_POST['adresse'];
-				$email=$_POST['email'];
+				$pseudo=$_POST['pseudo'];
 				$droit=$_POST['type_user'];
 				$password=$_POST['password'];
 				$verif_passwd=$_POST['verif_passwd'];
 				if($password==$verif_passwd){
 					$passwd_hashe=password_hash($password, PASSWORD_BCRYPT);
-					$req="INSERT INTO `handicap`.`authentification` (`email`,`passwd`,`droit`) VALUES ('$email','$passwd_hashe','$droit')";
+					$req="INSERT INTO `handicap`.`authentification` (`pseudo`,`passwd`,`droit`) VALUES ('$pseudo','$passwd_hashe','$droit')";
 					$reponse= $bdd->query($req);
-
-					$req2="SELECT id FROM `handicap`.`authentification` WHERE passwd=$passwd_hashe";
-					$reponse2=$bdd->query($req2);
-					$id=$reponse2->fetch();
-
-					if($droit==1){
-						$req3="INSERT INTO `handicap`.`patient` (`id`, `nom`, `prenom`, `sexe`, `adresse`,`date_naissance`) VALUES ('$id','$nom','$prenom', '$sexe', '$adresse', '$date_naissance')";
-						$reponse3=$bdd->query($req3);
-					}
-					elseif($droit==2){
-						//TODO
-					}
-					else {
-						//TODO
-
-					}
-
-					
-
 				}
 				else{
 					?>
@@ -48,30 +25,17 @@ if (isset($_POST['deconnexion'])) {
 				}
 			}
 
-			else if(isset($_POST['email'])){
+			else if(isset($_POST['identifiant'])){
 
-				$id=$_POST['email'];
+				$id=$_POST['identifiant'];
 				$password=$_POST['password'];
-				$req_auth="SELECT * FROM `handicap`.`authentification` WHERE email='$id'";
+				$req_auth="SELECT * FROM `handicap`.`authentification` WHERE pseudo='$id'";
 				$res_auth = $bdd->query($req_auth);
 				$line = $res_auth->fetch();
 				if(password_verify($password, $line['passwd'])){
 					//session_start();
-
-					if($line['droit']==1) $table=patient;
-					elseif($line['droit']==2) $table=proche;
-					else $table=soignant;
-
-					$req_info="SELECT * FROM `handicap`.`".$table."`";
-					$res_info=$bdd->query($res_info_patient);
-					$info=$res_info_patient->fetch();
-
-					$user=new Membre($id,$info['nom'], $info["prenom"], $info['sexe'], $info['adresse'], $line['droit']);
-					
-					$_SESSION['user']=$user;
-
-					/*$_SESSION['pseudo']=$id;
-					$_SESSION['droit']=$line['droit'];*/
+					$_SESSION['pseudo']=$id;
+					$_SESSION['droit']=$line['droit'];
 				}
 				else{
 					?>
