@@ -5,7 +5,7 @@ if (isset($_POST['deconnexion'])) {
 	session_destroy();
 }
 
-		if (isset($_POST['valid_inscript']) or isset($_POST['valid_authentif']) or (isset($_POST['new_passwd']))){ //A remplacer par les submit ??
+		if (isset($_POST['valid_inscript']) or isset($_POST['valid_authentif']) or (isset($_POST['modif_passwd']))){ //A remplacer par les submit ??
 
 			if(isset($_POST['valid_inscript'])){
 
@@ -82,17 +82,18 @@ if (isset($_POST['deconnexion'])) {
 				}
 			}
 
-			else if(isset($_POST['new_passwd'])){
-				$pseudo=$_SESSION['pseudo'];
+			else if(isset($_POST['modif_passwd'])){
+				$user=unserialize($_SESSION['user']);
+				$id=$user->getId();
 				$password=$_POST['password'];
 				$new_passwd=$_POST['new_passwd'];
 				$confirm_passwd=$_POST['confirm_passwd'];
 				$new_passwd_hashe=password_hash($new_passwd, PASSWORD_BCRYPT);
-				$req_mdp="SELECT * FROM `handicap`.`authentification` WHERE pseudo='$pseudo'";
+				$req_mdp="SELECT * FROM `handicap`.`authentification` WHERE id='$id'";
 				$res_mdp=$bdd->query($req_mdp);
 				$line=$res_mdp->fetch();
 				if((password_verify($password, $line['passwd'])) && ($new_passwd==$confirm_passwd)){
-					$req_maj="UPDATE `handicap`.`authentification` SET `passwd`='$new_passwd_hashe' WHERE pseudo='$pseudo'";
+					$req_maj="UPDATE `handicap`.`authentification` SET `passwd`='$new_passwd_hashe' WHERE id='$id'";
 					$maj=$bdd->query($req_maj)
 						or die ('Impossible de mettre à jour le mot de passe' . mysql_error());
 				}

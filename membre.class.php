@@ -12,19 +12,31 @@ class Membre {
 	protected $_droit;
 
 	public function setAdresse($new_adresse){
-		$$this->_adresse=$new_adresse;
+		$this->_adresse=$new_adresse;
 	}
 
 	public function getAdresse(){
 		return $this->_adresse;
 	}
 
+	public function setId($new_id){
+		$this->_id=$new_id;
+	}
+
 	public function getId(){
 		return $this->_id;
 	}
 
+	public function setNom($new_nom){
+		$this->_nom=$new_nom;
+	}
+
 	public function getNom(){
 		return $this->_nom;
+	}
+
+	public function setPrenom($new_prenom){
+		$this->_prenom=$new_prenom;
 	}
 
 	public function getPrenom(){
@@ -35,12 +47,20 @@ class Membre {
 		return $this->_sexe;
 	}
 
+	public function setDate_naissance($new_date_naissance){
+		$this->_date_naissance=$new_date_naissance;
+	}
+
 	public function getDate_naissance(){
 		return $this->_date_naissance;
 	}
 
 	public function getDroit(){
 		return $this->_droit;
+	}
+
+	public function setEmail($new_email){
+		$this->_email=$new_email;
 	}
 
 	public function getEmail(){

@@ -15,14 +15,7 @@
 
 		include("config_sql.php");
 
-        $req_id="SELECT * FROM `handicap`.`authentification` WHERE pseudo='".$_SESSION['pseudo']."'";
-        $result_id=$bdd->query($req_id);
-        $data=$result_id->fetch();
 
-
-        $req_datas="SELECT * FROM `handicap`.`donnees` WHERE id='".$data['id']."'";
-        $result_datas=$bdd->query($req_datas);
-        $data2=$result_datas->fetch();
 
 	?>
 	   <div id="conteneur">
@@ -40,40 +33,64 @@
 				</td>
 				<td id="corps">
 					<?php
-					if($_SESSION['droit']!=1) echo "Vous n'avez pas le droit d'accéder à cette page. Veuillez revenir à l'accueil.";
+
+					if(isset($_SESSION['user'])){
+
+						$user=unserialize($_SESSION['user']);
+
+				        $req_id="SELECT * FROM `handicap`.`authentification` WHERE id='".$user->getId()."'";
+				        $result_id=$bdd->query($req_id);
+				        $data=$result_id->fetch();
+
+						if($data['droit']==1) $table='patient';
+						elseif($data['droit']==2) $table='proche';
+						else $table='soignant';
+
+				        $req_datas="SELECT * FROM `handicap`.`".$table."` WHERE id='".$data['id']."'";
+				        $result_datas=$bdd->query($req_datas);
+				        $data2=$result_datas->fetch();
+
+				    }
+
+
+					if((!isset($_SESSION['user'])) || ($user->getDroit()!=1)) echo "Vous n'avez pas le droit d'accéder à cette page. Veuillez revenir à l'accueil.";
 					else if(isset($_POST['modif'])){
-						echo "<p id='titre'>DONNEES DE ".$_SESSION['pseudo']." :</p>";
+						echo "<p id='titre'>DONNEES DE ".$user->getPrenom()." ".$user->getNom()." :</p>";
 						echo "</br></br>
 						<form id='donnees' action='modif_donnees.php' method='post'>
 						<fieldset id='affichage'>
 						    <legend>Identité</legend>
-						    Nom: <input type='text' name='nom' value='".$data2['nom']."' required></br>
-						    Prénom: <input type='text' name='prenom' value='".$data2['prenom']."'required></br>
-						    Date de naissance: <input type='date' name='date_naiss' value='".$data2['date_naissance']."'required></br>
-						</fieldset></br>
-						<fieldset id='affichage'>
-						    <legend>Dossier médical</legend>
-						    Champ1: <input type='text' name='champ1' value='".$data2['champ1']."'></br>
-						    Champ2: <input type='text' name='champ2' value='".$data2['champ2']."'></br>
-						    Champ3: <input type='text' name='champ3' value='".$data2['champ3']."'></br>
-						    Champ4: <input type='text' name='champ4' value='".$data2['champ4']."'></br>
-						    Champ5: <input type='text' name='champ5' value='".$data2['champ5']."'></br>
+						    Nom: <input type='text' name='nom' value='".$user->getNom()."' required></br>
+						    Prénom: <input type='text' name='prenom' value='".$user->getPrenom()."'required></br>
+						    Date de naissance: <input type='date' name='date_naiss' value='".$user->getDate_naissance()."'required></br>
+						    Adresse: <input type='text' name='adresse' value='".$user->getAdresse()."'required></br>
+						    E-Mail: <input type='text' name='email' value='".$user->getEmail()."'required></br>
 						</fieldset></br>
 						<input type='submit' name='valid_modif' value='VALIDER'>
 						</form>";
 					}
 					else if(isset($_POST['valid_modif'])){
-						$update="UPDATE `handicap`.`donnees` SET
+
+						$user->setNom($_POST['nom']);
+						$user->setPrenom($_POST['prenom']);
+						$user->setDate_naissance($_POST['date_naiss']);
+						$user->setAdresse($_POST['adresse']);
+						$user->setEmail($_POST['email']);
+
+						$_SESSION['user']=serialize($user);
+
+						$update="UPDATE `handicap`.`patient` SET
 						`nom`='".$_POST['nom']."',
 						`prenom`='".$_POST['prenom']."',
 						`date_naissance`='".$_POST['date_naiss']."',
-						`champ1`='".$_POST['champ1']."',
-						`champ2`='".$_POST['champ2']."',
-						`champ3`='".$_POST['champ3']."',
-						`champ4`='".$_POST['champ4']."',
-						`champ5`='".$_POST['champ5']."'
-						WHERE `id`='".$data['id']."'";
+						`adresse`='".$_POST['adresse']."'
+						WHERE `id`='".$user->getId()."'";
+						$update2="UPDATE `handicap`.`authentification` SET
+						`email`='".$_POST['email']."'
+						WHERE `id`='".$user->getId()."';";
 						$update_res=$bdd->query($update)
+							or die("Impossible de mettre à jour : " . mysql_error());
+						$update_res2=$bdd->query($update2)
 							or die("Impossible de mettre à jour : " . mysql_error());
 						echo "<img width=20px height=20px src='valide.png'>  Données enregistrées";
 					}

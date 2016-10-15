@@ -11,6 +11,7 @@
 
 	<?php
 		session_start();
+		include("config_sql.php");
 
 	?>
 	   <div id="conteneur">
@@ -21,26 +22,22 @@
 			<tr >
 				<td height="800px" width="15%" id="banniere">
 					<?php
-						echo "Bonjour ".$_SESSION['pseudo']."\n
-						<form id='deconnexion' action='accueil.php' method='post'>
-						<input type='submit' name='deconnexion' value='Se déconnecter'>
-						</form>"
-						;
+						include('verif_droit.php')
 						?>
 
 				</td>
 				<td id="corps">
 				<?php
-				if(!isset($_SESSION['pseudo'])){
+				if((!isset($_SESSION['user'])) || ($user->getDroit()!=1)){
 					echo "Vous n'avez pas le droit  d'accéder à cette page, veuillez revenir à l'accueil.";
 				}
-				else{
+				else {
 					echo "<form id='inscription' action='accueil.php' method='post'>
 					CHANGEMENT DE MOT DE PASSE</br></br>
 					<input type='password' name='password' id='password' placeholder='Entrez votre mot de passe' size='50px' required></br></br>
 					<input type='password' name='new_passwd' id='new_passwd' placeholder='Entrez votre nouveau mot de passe' size='50px' required></br></br>
 					<input type='password' name='confirm_passwd' id='confirm_passwd' placeholder='Entrez à nouveau le mot de passe' size='50px' required></br></br>
-					<input type='submit' id='modif_passwd' value='Valider'>
+					<input type='submit' name='modif_passwd' value='Valider'>
 				</form>";
 				}
 				?>
