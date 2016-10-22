@@ -33,7 +33,7 @@
 			            <option value="F">Féminin</option>
 			            <option value="H">Masculin</option>
 			        </select><br /><br />
-					Entrez votre date de naissance : <input type="date" name="date_naissance" id="date_naissance" size="50px" required><br /><br />
+					Entrez votre date de naissance : <input type="date" name="date_naissance" id="date_naissance" size="50px" required><br /><p>Format de la date: jj/mm/aaaa</p>
 					<input type="text" name="adresse" id="adresse" placeholder="Entrez votre adresse" size="50px" required><br /><br />
 					<input type="text" name="email" id="email" placeholder="Entrez votre adresse e-mail" size="50px" required><br /><br />
 					<label for="type_user">Choisissez le type d'utilisateur</label><br /><br />

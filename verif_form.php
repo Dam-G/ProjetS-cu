@@ -1,11 +1,14 @@
 <?php
 
+include("function.php");
+
 if (isset($_POST['deconnexion'])) {
 	$_SESSION=Array();
 	session_destroy();
+	//Il faut penser à supprimer le cookie !!
 }
 
-		if (isset($_POST['valid_inscript']) or isset($_POST['valid_authentif']) or (isset($_POST['modif_passwd']))){ //A remplacer par les submit ??
+		if (isset($_POST['valid_inscript']) or isset($_POST['valid_authentif']) or (isset($_POST['modif_passwd']))){ 
 
 			if(isset($_POST['valid_inscript'])){
 
@@ -13,14 +16,18 @@ if (isset($_POST['deconnexion'])) {
 				$prenom=$_POST['prenom'];
 				$sexe=$_POST['sexe'];
 				$date_naissance=$_POST['date_naissance'];
+
+				$date_naissance=date_to_sql($date_naissance);
+
 				$adresse=$_POST['adresse'];
 				$email=$_POST['email'];
 				$droit=$_POST['type_user'];
 				$password=$_POST['password'];
 				$verif_passwd=$_POST['verif_passwd'];
+				$code=mt_rand();
 				if($password==$verif_passwd){
 					$passwd_hashe=password_hash($password, PASSWORD_BCRYPT);
-					$req="INSERT INTO `handicap`.`authentification` (`email`,`passwd`,`droit`) VALUES ('$email','$passwd_hashe','$droit')";
+					$req="INSERT INTO `handicap`.`authentification` (`email`,`passwd`,`droit`,`actif`, `code`) VALUES ('$email','$passwd_hashe','$droit',0,'$code')";
 					$reponse= $bdd->query($req);
 
 					$req2="SELECT * FROM `handicap`.`authentification` WHERE passwd='$passwd_hashe'";
@@ -32,6 +39,7 @@ if (isset($_POST['deconnexion'])) {
 						$req3="INSERT INTO `handicap`.`patient` (`id`, `nom`, `prenom`, `sexe`, `adresse`,`date_naissance`) VALUES ('$id','$nom','$prenom', '$sexe', '$adresse', '$date_naissance')";
 						$reponse3=$bdd->query($req3);
 					}
+
 					elseif($droit==2){
 						//TODO
 					}
@@ -40,7 +48,31 @@ if (isset($_POST['deconnexion'])) {
 
 					}
 
-					
+					echo '<script>alert("Inscription validée !");</script>';
+
+					//MAIL //TOFINISH
+					/*
+					$objet="Confirmation de votre inscription";
+					$contenu='
+						<html>
+						<head>
+						   <title>Vous vous êtes inscrit sur la site de gestion du handicap.</title>
+						</head>
+						<body>
+						   <p>Bonjour Mr/Mme '.$nom.'</p>
+						   <p>Pour valider votre inscription et activer votre compte, veuillez cliquer sur le lien pour valider.</p>
+						   <a href="localhost/ProjetSecu/active.php?code='.$code.'">localhost/ProjetSecu/active.php?code='.$code.'</a>
+						</body>
+						</html>';
+					$entetes =
+					'Content-type: text/html; charset=utf-8' . "\r\n" .
+					'From: email@domain.fr' . "\r\n" .
+					'Reply-To: email@domain.fr' . "\r\n" .
+					'X-Mailer: PHP/' . phpversion();
+					//Envoi du mail
+					mail($email, $objet, $contenu, $entetes);
+
+					*/
 
 				}
 				else{
@@ -57,7 +89,7 @@ if (isset($_POST['deconnexion'])) {
 				$req_auth="SELECT * FROM `handicap`.`authentification` WHERE email='$email'";
 				$res_auth = $bdd->query($req_auth);
 				$line = $res_auth->fetch();
-				if(password_verify($password, $line['passwd'])){
+				if((password_verify($password, $line['passwd'])) && ($line['actif']==1)){
 					//session_start();
 					$id=$line['id'];
 					if($line['droit']==1) $table='patient';
