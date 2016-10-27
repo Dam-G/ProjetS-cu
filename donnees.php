@@ -1,6 +1,5 @@
 <?php
 
-include("function.php");
 		$user=unserialize($_SESSION['user']);
 
 /*        $req_id="SELECT * FROM `handicap`.`authentification` WHERE id='".$user->getId."'";

@@ -12,5 +12,6 @@ catch (Exception $e)
 	include("membre.class.php");
 	include("patient.class.php");
 	include("soignant.class.php");
+	include("proche.class.php");
 
 ?>

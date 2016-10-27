@@ -5,6 +5,7 @@ include("function.php");
 if (isset($_POST['deconnexion'])) {
 	$_SESSION=Array();
 	session_destroy();
+	setcookie("PHPSESSID", "", time()-3600);
 	//Il faut penser à supprimer le cookie !!
 }
 
@@ -100,8 +101,22 @@ if (isset($_POST['deconnexion'])) {
 					$res_info=$bdd->query($req_info);
 					$info=$res_info->fetch();
 
-					$user=new Membre($id,$info['nom'], $info["prenom"], $info['sexe'], $info['date_naissance'], $info['adresse'], $email, $line['droit']);
-					
+					if($line['droit']==1) {
+
+						$user=new Patient($id,$info['nom'], $info["prenom"], $info['sexe'], $info['date_naissance'], $info['adresse'], $email, $line['droit']);
+
+					}
+					elseif($line['droit']==2) {
+
+						$user=new Proche($id,$info['nom'], $info["prenom"], $info['sexe'], $info['date_naissance'], $info['adresse'], $email, $line['droit']);
+
+					}
+					else {
+
+						$user=new Soignant($id,$info['nom'], $info["prenom"], $info['sexe'], $info['date_naissance'], $info['adresse'], $email, $line['droit']);
+
+					}
+
 					$_SESSION['user']=serialize($user);
 
 					/*$_SESSION['pseudo']=$id;
