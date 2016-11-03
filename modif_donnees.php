@@ -63,6 +63,7 @@
 						    Nom: <input type='text' name='nom' value='".$user->getNom()."' required></br>
 						    Prénom: <input type='text' name='prenom' value='".$user->getPrenom()."'required></br>
 						    Date de naissance: <input type='date' name='date_naiss' value='".$user->getDate_naissance()."'required></br>
+						    Pays de naissance: <input type='text' name='pays_naiss' value='".$user->getPays_naissance()."'required></br>
 						    Adresse: <input type='text' name='adresse' value='".$user->getAdresse()."'required></br>
 						    E-Mail: <input type='text' name='email' value='".$user->getEmail()."'required></br>
 						</fieldset></br>

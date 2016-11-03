@@ -27,10 +27,8 @@
 				</td>
 				<td id="corps">
 				<?php
-					if (isset($_GET['data']) && ($_GET['data']=='donnees') && (isset($_SESSION['user']))){
-						$user=unserialize($_SESSION['user']);
-						if ($user->getDroit()==1) include('donnees.php');
-						else  echo'<p>Ici, prochainement, une présentation de notre site !</p>';
+					if (isset($_GET['data']) && (isset($_SESSION['user']))){
+						echo'<p>Ici, prochainement, une présentation de notre site !</p>';
 					}
 					else echo'<p>Ici, prochainement, une présentation de notre site !</p>';
 				 ?></td>

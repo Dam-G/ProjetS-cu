@@ -30,10 +30,19 @@
 					<input type="text" name="prenom" id="prenom" placeholder="Entrez votre prenom" size="50px" required><br /><br />
 					<label for="sexe">Sexe : </label>
 					<select name="sexe" id="sexe">
-			            <option value="F">Féminin</option>
-			            <option value="H">Masculin</option>
+			            <option value="Female">Féminin</option>
+			            <option value="Male">Masculin</option>
 			        </select><br /><br />
 					Entrez votre date de naissance : <input type="date" name="date_naissance" id="date_naissance" size="50px" required><br /><p>Format de la date: jj/mm/aaaa</p>
+					<label for="pays_naiss">Pays de naissance : </label>
+					<select name="pays_naiss" id="pays_naiss">
+			            <?php
+			            	include("pays.php");
+			            	foreach ($countryCode as $value) {
+			            		echo "<option value=$value[3]>$value[3]</option>";
+			            	}
+			            ?>
+			        </select><br /><br />
 					<input type="text" name="adresse" id="adresse" placeholder="Entrez votre adresse" size="50px" required><br /><br />
 					<input type="text" name="email" id="email" placeholder="Entrez votre adresse e-mail" size="50px" required><br /><br />
 					<label for="type_user">Choisissez le type d'utilisateur</label><br /><br />
@@ -44,6 +53,8 @@
 			        </select><br /><br />
 					<input type="password" name="password" id="password" placeholder="Entrez votre mot de passe" size="50px" required><br /><br />
 					<input type="password" name="verif_passwd" id="verif_passwd" placeholder="Entrez à nouveau le mot de passe" size="50px" required><br /><br />
+					<label for="captcha">Recopiez le mot : <img src="captcha.php" alt="Captcha" /></label><br /><br />
+					<input type="text" name="captcha" id="captcha"  required><br /><br />
 					<input type="submit" name="valid_inscript" value="Valider">
 				</form>
 

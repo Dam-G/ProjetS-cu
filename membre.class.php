@@ -7,6 +7,7 @@ class Membre {
 	protected $_prenom;
 	protected $_sexe;
 	protected $_date_naissance;
+	protected $_pays_naissance;
 	protected $_adresse;
 	protected $_email;
 	protected $_droit;
@@ -55,6 +56,14 @@ class Membre {
 		return $this->_date_naissance;
 	}
 
+	public function setPays_naissance($new_pays_naissance){
+		$this->_pays_naissance=$new_pays_naissance;
+	}
+
+	public function getPays_naissance(){
+		return $this->_pays_naissance;
+	}
+
 	public function getDroit(){
 		return $this->_droit;
 	}
@@ -67,12 +76,13 @@ class Membre {
 		return $this->_email;
 	}
 
-	public function __construct($id, $nom, $prenom, $sexe, $date_naissance, $adresse, $email, $droit){
+	public function __construct($id, $nom, $prenom, $sexe, $date_naissance, $pays_naissance, $adresse, $email, $droit){
 		$this->_id=$id;
 		$this->_nom=$nom;
 		$this->_prenom=$prenom;
 		$this->_sexe=$sexe;
 		$this->_date_naissance=$date_naissance;
+		$this->_pays_naissance=$pays_naissance;
 		$this->_adresse=$adresse;
 		$this->_email=$email;
 		$this->_droit=$droit;

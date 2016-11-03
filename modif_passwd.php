@@ -28,7 +28,7 @@
 				</td>
 				<td id="corps">
 				<?php
-				if((!isset($_SESSION['user'])) || ($user->getDroit()!=1)){
+				if((!isset($_SESSION['user']))){
 					echo "Vous n'avez pas le droit  d'accéder à cette page, veuillez revenir à l'accueil.";
 				}
 				else {

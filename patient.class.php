@@ -4,9 +4,11 @@ class Patient extends Membre {
  
 	private $_data1;
 	private $_data2;
+	private $_id_demandeurs;
 
-	public function __construct($id, $nom, $prenom, $sexe, $date_naissance, $adresse, $email, $droit){
-		parent::__construct($id, $nom, $prenom, $sexe, $date_naissance, $adresse, $email, $droit);
+	public function __construct($id, $nom, $prenom, $sexe, $date_naissance, $pays_naissance, $adresse, $email, $droit, $id_demandeurs){
+		parent::__construct($id, $nom, $prenom, $sexe, $date_naissance, $pays_naissance, $adresse, $email, $droit);
+		$this->setId_demandeurs($id_demandeurs);
 		$this->setData1(null);
 		$this->setData2(null);
 	}
@@ -20,12 +22,20 @@ class Patient extends Membre {
 		$this->_data2=$new_data;
 	}
 
+	public function setId_demandeurs($new_id_demandeurs){
+		$this->_id_demandeurs=$new_id_demandeurs;
+	}
+
 	public function getData1(){
 		return $this->_data1;
 	}
 
 	public function getData2(){
 		return $this->_data2;
+	}
+
+	public function getId_demandeurs(){
+		return $this->_id_demandeurs;
 	}
 
 }
