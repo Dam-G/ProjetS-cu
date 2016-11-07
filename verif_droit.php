@@ -54,6 +54,19 @@
 							</form>";
 							echo "<br /><p><a href='donnees.php' id='onglet'>Consulter et modifier les données d'un patient</a></p>";
 						}
+						else if($user->getDroit()==0){
+							echo "Bonjour Administrateur \n
+							<form id='deconnexion' action='accueil.php' method='post'>
+							<input type='submit' name='deconnexion' value='Se déconnecter'>
+							</form>"
+							;
+							echo "<form id='modif_passwd' action='modif_passwd.php' method='post'>
+							<input type='submit' name='modif_passwd' value='Modifier mot de passe'>
+							</form>";
+							echo "<br /><p><a href='validation.php' id='onglet'>Valider les inscriptions des médecins</a></p>";
+
+						}
+
 
 					}
 

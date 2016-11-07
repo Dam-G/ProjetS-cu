@@ -29,6 +29,9 @@ if (isset($_POST['deconnexion'])) {
 				$captcha = htmlspecialchars($_POST['captcha']);
 				$code=mt_rand();
 
+				if (filter_var($email, FILTER_VALIDATE_EMAIL)) $VALIDE=1;
+				else $VALIDE=0;
+
 				//Requête pour récupérer la liste des adresse emails dans notre bdd
 				$req_emails="SELECT * FROM `handicap`.`authentification`";
 				$emails=$bdd->query($req_emails);
@@ -40,9 +43,13 @@ if (isset($_POST['deconnexion'])) {
 				}
 				
 
-				if(($password==$verif_passwd) && ($_SESSION['captcha']==$captcha) && (!$EXISTE)){
+				if(($password==$verif_passwd) && ($_SESSION['captcha']==$captcha) && (!$EXISTE) && $VALIDE){
 
 					$passwd_hashe=password_hash($password, PASSWORD_BCRYPT);
+
+					if($droit==3) $actif=0; //Si c'est un medecin, l'admin doit activer le compte
+					else $actif=1;
+
 					$req="INSERT INTO `handicap`.`authentification` (`email`,`passwd`,`droit`,`actif`, `code`) VALUES ('$email','$passwd_hashe','$droit',1,'$code')";
 					$reponse= $bdd->query($req);
 
@@ -54,6 +61,9 @@ if (isset($_POST['deconnexion'])) {
 					if($droit==1){
 						$req3="INSERT INTO `handicap`.`patient` (`id`, `nom`, `prenom`, `sex`, `adresse`,`date_naissance`, `nativecountry`) VALUES ('$id','$nom','$prenom', '$sexe', '$adresse', '$date_naissance', '$pays_naissance')";
 						$reponse3=$bdd->query($req3);
+
+						$req4="INSERT INTO `handicap`.`groupes` (`id`, `id_demandeurs`, `id_membres`) VALUES ('$id', null, null)";
+						$reponse4=$bdd->query($req4);
 					}
 
 					elseif($droit==2){
@@ -61,11 +71,14 @@ if (isset($_POST['deconnexion'])) {
 						$reponse3=$bdd->query($req3);
 					}
 					else {
+						$req3="INSERT INTO `handicap`.`soignant` (`id`, `nom`, `prenom`, `sex`, `adresse`,`date_naissance`, `nativecountry`, `specialite`, `liste_patient`) VALUES ('$id','$nom','$prenom', '$sexe', '$adresse', '$date_naissance', '$pays_naissance', null, null)";
+						$reponse3=$bdd->query($req3);
 						//TODO
 
 					}
 
-					echo '<script>alert("Inscription validée !");</script>';
+					if ($droit==3) echo '<script>alert("Inscription validée, un administrateur doit maintenant activer votre compte");</script>';
+					else echo '<script>alert("Inscription validée !");</script>';
 
 					//MAIL //TOFINISH
 					/*
@@ -111,18 +124,27 @@ if (isset($_POST['deconnexion'])) {
 					$id=$line['id'];
 					if($line['droit']==1) $table='patient';
 					elseif($line['droit']==2) $table='proche';
-					else $table='soignant';
+					elseif($line['droit']==3) $table='soignant';
 
-					$req_info="SELECT * FROM `handicap`.`".$table."` WHERE id='$id'";
-					$res_info=$bdd->query($req_info);
-					$info=$res_info->fetch();
+					if (isset($table)){
+						$req_info="SELECT * FROM `handicap`.`".$table."` WHERE id='$id'";
+						$res_info=$bdd->query($req_info);
+						$info=$res_info->fetch();
+					}
 
-					if($line['droit']==1) {
+					if ($line['droit']==0){
+						$user=new Membre($id,null, null, null, null, null, null, $email, $line['droit']);
+					}
+					else if($line['droit']==1) {
 
-						$user=new Patient($id,$info['nom'], $info["prenom"], $info['sex'], $info['date_naissance'], $info['nativecountry'], $info['adresse'], $email, $line['droit'], $info['id_demandeurs']);
+						$req_groupe="SELECT * FROM `handicap`.`groupes` WHERE id='$id'";
+						$res_groupe=$bdd->query($req_groupe);
+						$groupe=$res_groupe->fetch();
+
+						$user=new Patient($id,$info['nom'], $info["prenom"], $info['sex'], $info['date_naissance'], $info['nativecountry'], $info['adresse'], $email, $line['droit'], $groupe['id_demandeurs']);
 
 					}
-					elseif($line['droit']==2) {
+					else if($line['droit']==2) {
 
 						$user=new Proche($id,$info['nom'], $info["prenom"], $info['sex'], $info['date_naissance'], $info['nativecountry'], $info['adresse'], $email, $line['droit'], $info['id_proches']);
 
@@ -177,7 +199,7 @@ if (isset($_POST['deconnexion'])) {
 				$droit = $droit['droit'];
 
 				if($droit==1){
-					$req_patient="SELECT * FROM `handicap`.`patient` WHERE id='$id'";
+					$req_patient="SELECT * FROM `handicap`.`groupes` WHERE id='$id'";
 					$patient=$bdd->query($req_patient);
 					$info_patient=$patient->fetch();
 
@@ -188,8 +210,9 @@ if (isset($_POST['deconnexion'])) {
 						$new_demandeurs=$info_patient['id_demandeurs']." ".$user_id;
 					}
 
-					$req_update="UPDATE `handicap`.`patient` SET `id_demandeurs`='$new_demandeurs' WHERE id='$id'";
-					$update=$bdd->query($req_update);
+					if(!in_array($user_id, explode(' ', $info_patient['id_demandeurs']))){//Pour éviter qu'un proche fasse plusieurs fois une même demande
+						$req_update="UPDATE `handicap`.`groupes` SET `id_demandeurs`='$new_demandeurs' WHERE id='$id'";
+						$update=$bdd->query($req_update);}
 					?>
 					<script type="text/javascript">alert("Demande envoyée. En attente de validation.");</script>
 					<?php

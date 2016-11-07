@@ -29,26 +29,42 @@
 
 			$liste_demandeurs=$user->getId_demandeurs();
 
-			$req_proche="SELECT * FROM `handicap`.`proche` WHERE id='$id'";
-			$res_proche=$bdd->query($req_proche);
-			$infos_proche=$res_proche->fetch();
+			if(in_array($id, explode(' ', $liste_demandeurs))){
 
-			if(empty($infos_proche['id_proches'])){
-				$new_proche=$id_patient;
+				$req_proche="SELECT * FROM `handicap`.`proche` WHERE id='$id'";
+				$res_proche=$bdd->query($req_proche);
+				$infos_proche=$res_proche->fetch();
+
+				if(empty($infos_proche['id_proches'])){
+					$new_proche=$id_patient;
+				}
+				else{
+					$new_proche=$infos_proche['id_proches']." ".$id_patient;
+				}
+
+				$new_demandeurs=str_replace($id, "", $liste_demandeurs);
+
+				$req_groupe="SELECT * FROM `handicap`.`groupes` WHERE id='$id_patient'";
+				$res_groupe=$bdd->query($req_groupe);
+				$groupe=$res_groupe->fetch();
+
+				if(empty($groupe['id_membres'])){
+					$new_membres=$id;
+				}
+				else{
+					$new_membres=$groupe['id_membres']." ".$id;
+				}
+
+				$req_update="UPDATE `handicap`.`proche` SET `id_proches`='$new_proche' WHERE id='$id'";
+				$update=$bdd->query($req_update);
+
+				$req_update2="UPDATE `handicap`.`groupes` SET `id_demandeurs`='$new_demandeurs' WHERE id='$id_patient'";
+				$update2=$bdd->query($req_update2);
+				$req_update3="UPDATE `handicap`.`groupes` SET `id_membres`='$new_membres' WHERE id='$id_patient'";
+				$res_update3=$bdd->query($req_update3);
+				$user->setId_demandeurs($new_demandeurs);
+				$_SESSION['user']=serialize($user);
 			}
-			else{
-				$new_proche=$infos_proche['id_proches']." ".$id_patient;
-			}
-
-			$new_demandeurs=str_replace($id, "", $liste_demandeurs);
-
-			$req_update="UPDATE `handicap`.`proche` SET `id_proches`='$new_proche' WHERE id='$id'";
-			$update=$bdd->query($req_update);
-
-			$req_update2="UPDATE `handicap`.`patient` SET `id_demandeurs`='$new_demandeurs' WHERE id='$id_patient'";
-			$update2=$bdd->query($req_update2);
-			$user->setId_demandeurs($new_demandeurs);
-			$_SESSION['user']=serialize($user);
 		
 		}
 
@@ -65,10 +81,40 @@
 
 			$new_demandeurs=str_replace($id, "", $liste_demandeurs);
 
-			$req_update2="UPDATE `handicap`.`patient` SET `id_demandeurs`='$new_demandeurs' WHERE id='$id_patient'";
+			$req_update2="UPDATE `handicap`.`groupes` SET `id_demandeurs`='$new_demandeurs' WHERE id='$id_patient'";
 			$update2=$bdd->query($req_update2);
 			$user->setId_demandeurs($new_demandeurs);
 			$_SESSION['user']=serialize($user);
+		
+		}
+
+		if(isset($_GET['supprime_proche'])){
+			$id=$_GET['supprime_proche'];
+			$id_patient=$user->getId();
+
+			
+			$req_groupe="SELECT * FROM `handicap`.`groupes` WHERE id='$id_patient'";
+			$res_groupe=$bdd->query($req_groupe);
+			$groupe=$res_groupe->fetch();
+
+			$req_membre="SELECT * FROM `handicap`.`proche` WHERE id='$id'";
+			$res_membre=$bdd->query($req_membre);
+			$membre=$res_membre->fetch();
+
+			$liste_membres=$groupe['id_membres'];
+			$liste_proches=$membre['id_proches'];
+
+			if(in_array($id, explode(' ', $liste_membres))){
+
+				$new_membres=str_replace($id, "", $liste_membres);
+				$new_proches=str_replace($id_patient, "", $liste_proches);
+
+				$req_update2="UPDATE `handicap`.`groupes` SET `id_membres`='$new_membres' WHERE id='$id_patient'";
+				$update2=$bdd->query($req_update2);
+
+				$req_update3="UPDATE `handicap`.`proche` SET `id_proches`='$new_proches' WHERE id='$id'";
+				$update3=$bdd->query($req_update3);
+			}
 		
 		}
 
@@ -92,6 +138,9 @@
 				<td id="corps">
 
 					<p>
+
+					<fieldset>
+						<legend>Liste des demandeurs</legend>
 
 					<table>
 						<tr>
@@ -130,6 +179,49 @@
 							}
 						?>
 					</table>
+					</fieldset>
+
+					<fieldset>
+						<legend>Liste des membres</legend>
+
+					<table>
+						<tr>
+							<td><b>Nom</b></td>
+							<td><b>Prenom</b></td>
+							<td><b>Date de naissance</b></td>
+							<td><b>Action</b></td>
+						</tr>
+						<?php
+							$id=$user->getId();
+							
+							$req_groupe="SELECT * FROM `handicap`.`groupes` WHERE id='$id'";
+							$res_groupe=$bdd->query($req_groupe);
+							$groupe=$res_groupe->fetch();
+
+							$liste_membres=$groupe['id_membres'];
+
+							$membres=explode(" ", $liste_membres);
+
+							foreach ($membres as $value) {
+								if(!empty($value)){
+									$req_membres="SELECT * FROM `handicap`.`proche` WHERE id='$value'";
+									$res_membres=$bdd->query($req_membres);
+									$infos_membres=$res_membres->fetch();
+
+									echo "
+									<tr>
+										<td>".$infos_membres['nom']."</td>
+										<td>".$infos_membres['prenom']."</td>
+										<td>".sql_to_date($infos_membres['date_naissance'])."</td>
+										<td><a href='groupe.php?supprime_proche=".$value."' title='Supprimer'>Supprimer du groupe</a></td>
+									</tr>
+									";
+								}
+
+							}
+						?>
+					</table>
+					</fieldset>
 
 				</td>
 			</tr>
