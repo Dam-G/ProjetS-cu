@@ -15,6 +15,7 @@
 
 		include("config_sql.php");
 
+		if(!isset($_SESSION['user'])) header("Location: accueil.php");
 
 
 	?>
@@ -34,8 +35,6 @@
 				<td id="corps">
 					<?php
 
-					if(isset($_SESSION['user'])){
-
 						$user=unserialize($_SESSION['user']);
 
 				        $req_id="SELECT * FROM `handicap`.`authentification` WHERE id='".$user->getId()."'";
@@ -50,11 +49,8 @@
 				        $result_datas=$bdd->query($req_datas);
 				        $data2=$result_datas->fetch();
 
-				    }
 
-
-					if((!isset($_SESSION['user'])) || ($user->getDroit()!=1)) echo "Vous n'avez pas le droit d'accéder à cette page. Veuillez revenir à l'accueil.";
-					else if(isset($_POST['modif'])){
+					if(isset($_POST['modif'])){
 						echo "<p id='titre'>DONNEES DE ".$user->getPrenom()." ".$user->getNom()." :</p>";
 						echo "</br></br>
 						<form id='donnees' action='modif_donnees.php' method='post'>
@@ -77,14 +73,16 @@
 						$user->setDate_naissance($_POST['date_naiss']);
 						$user->setAdresse($_POST['adresse']);
 						$user->setEmail($_POST['email']);
+						$user->setPays_naissance($_POST['pays_naiss']);
 
 						$_SESSION['user']=serialize($user);
 
-						$update="UPDATE `handicap`.`patient` SET
+						$update="UPDATE `handicap`.`".$table."` SET
 						`nom`='".$_POST['nom']."',
 						`prenom`='".$_POST['prenom']."',
 						`date_naissance`='".$_POST['date_naiss']."',
-						`adresse`='".$_POST['adresse']."'
+						`adresse`='".$_POST['adresse']."',
+						`nativecountry`='".$_POST['pays_naiss']."'
 						WHERE `id`='".$user->getId()."'";
 						$update2="UPDATE `handicap`.`authentification` SET
 						`email`='".$_POST['email']."'

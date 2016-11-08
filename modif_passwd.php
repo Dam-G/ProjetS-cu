@@ -13,6 +13,10 @@
 		session_start();
 		include("config_sql.php");
 
+		if((!isset($_SESSION['user']))){
+			header("Location: accueil.php");
+		}
+
 	?>
 	   <div id="conteneur">
 		<table width="100%">			
@@ -28,10 +32,6 @@
 				</td>
 				<td id="corps">
 				<?php
-				if((!isset($_SESSION['user']))){
-					echo "Vous n'avez pas le droit  d'accéder à cette page, veuillez revenir à l'accueil.";
-				}
-				else {
 					echo "<form id='inscription' action='accueil.php' method='post'>
 					CHANGEMENT DE MOT DE PASSE</br></br>
 					<input type='password' name='password' id='password' placeholder='Entrez votre mot de passe' size='50px' required></br></br>
@@ -39,7 +39,7 @@
 					<input type='password' name='confirm_passwd' id='confirm_passwd' placeholder='Entrez à nouveau le mot de passe' size='50px' required></br></br>
 					<input type='submit' name='modif_passwd' value='Valider'>
 				</form>";
-				}
+				
 				?>
 
 				</td>

@@ -11,6 +11,16 @@
 
 	<?php
 
+	session_start();
+	include("config_sql.php");
+
+	if (isset($_SESSION['user'])){
+			$user=unserialize($_SESSION['user']);
+	}
+	else header("Location: accueil.php");
+
+	if($user->getDroit()!=2) header("Location: accueil.php");
+
 	?>
 	   <div id="conteneur">
 		<table width="100%">			

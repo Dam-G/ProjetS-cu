@@ -15,7 +15,13 @@
 
 		include("config_sql.php");
 		include("function.php");
-		$user=unserialize($_SESSION['user']);
+
+		if (isset($_SESSION['user'])){
+			$user=unserialize($_SESSION['user']);
+		}
+		else header("Location: accueil.php");
+
+		if($user->getDroit()!=1) header("Location: accueil.php");
 
 		if(isset($_GET['valid_proche'])){
 			$id=$_GET['valid_proche'];

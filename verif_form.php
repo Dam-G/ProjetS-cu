@@ -50,7 +50,7 @@ if (isset($_POST['deconnexion'])) {
 					if($droit==3) $actif=0; //Si c'est un medecin, l'admin doit activer le compte
 					else $actif=1;
 
-					$req="INSERT INTO `handicap`.`authentification` (`email`,`passwd`,`droit`,`actif`, `code`) VALUES ('$email','$passwd_hashe','$droit',1,'$code')";
+					$req="INSERT INTO `handicap`.`authentification` (`email`,`passwd`,`droit`,`actif`, `code`) VALUES ('$email','$passwd_hashe','$droit','$actif','$code')";
 					$reponse= $bdd->query($req);
 
 					$req2="SELECT * FROM `handicap`.`authentification` WHERE passwd='$passwd_hashe'";

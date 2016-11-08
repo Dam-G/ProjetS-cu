@@ -14,7 +14,14 @@
 		include("config_sql.php");
 		include("function.php");
 		session_start();
-		$user=unserialize($_SESSION['user']);
+
+		if (isset($_SESSION['user'])){
+			$user=unserialize($_SESSION['user']);
+	}
+		else header("Location: accueil.php");
+
+
+
 
 ?>
 
@@ -41,7 +48,7 @@
 
 
 
-					if($user->getDroit()==1){
+					
 				        $date_naissance=sql_to_date($user->getDate_naissance());
 						echo "<p id='titre'>DONNEES :</p>";
 						echo "<br /><br />
@@ -61,9 +68,8 @@
 						<input type='submit' name='modif' value='Modifier/Ajouter des données'>
 						<input type='submit' name='suppr' value='Supprimer les données'>
 						</form>";
-					}
 
-					else if(($user->getDroit()==2) && (isset($_GET['patient']))){
+					if(($user->getDroit()==2) && (isset($_GET['patient']))){
 
 						$id=$_GET['patient'];
 						$id_proche=$user->getId();
