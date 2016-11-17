@@ -41,6 +41,8 @@
 							<input type='submit' name='modif_passwd' value='Modifier mot de passe'>
 							</form>";
 							echo "<br /><p><a href='donnees.php' id='onglet'>Consulter et modifier vos données</a></p>";
+							if($user->getTuteur()!=0) echo "<br /><p><a href='donnees.php' id='onglet'>Consulter et modifier les données de votre tutelle</a></p>";
+							else echo "<br /><p><a href='tutorat.php' id='onglet'>Faire une demande de tutorat</a></p>";
 							echo "<br /><p><a href='liste_proches.php' id='onglet'>Consulter votre liste de patients proches</a></p>";
 						}
 						else if($user->getDroit()==3){
@@ -53,7 +55,7 @@
 							<input type='submit' name='modif_passwd' value='Modifier mot de passe'>
 							</form>";
 							echo "<br /><p><a href='donnees.php' id='onglet'>Consulter et modifier vos données</a></p>";
-							echo "<br /><p><a href='liste_patients.php' id='onglet'>Gestion des patients</a></p>";
+							echo "<br /><p><a href='donnees.php' id='onglet'>Consulter et modifier les données d'un patient</a></p>";
 						}
 						else if($user->getDroit()==0){
 							echo "Bonjour Administrateur \n
