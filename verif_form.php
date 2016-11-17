@@ -9,7 +9,7 @@ if (isset($_POST['deconnexion'])) {
 	//Il faut penser à supprimer le cookie !!
 }
 
-		if (isset($_POST['valid_inscript']) or isset($_POST['valid_authentif']) or (isset($_POST['modif_passwd'])) or (isset($_POST['rejoindre_groupe']))){ 
+	/*	if (isset($_POST['valid_inscript']) or isset($_POST['valid_authentif']) or (isset($_POST['modif_passwd'])) or (isset($_POST['rejoindre_groupe']))){ */
 
 			if(isset($_POST['valid_inscript'])){
 
@@ -29,7 +29,7 @@ if (isset($_POST['deconnexion'])) {
 				$captcha = htmlspecialchars($_POST['captcha']);
 				$code=mt_rand();
 
-				if (filter_var($email, FILTER_VALIDATE_EMAIL)) $VALIDE=1;
+				if (filter_var($email, FILTER_VALIDATE_EMAIL)) $VALIDE=1; //On regarde si c'est une adresse mail valide
 				else $VALIDE=0;
 
 				//Requête pour récupérer la liste des adresse emails dans notre bdd
@@ -151,7 +151,7 @@ if (isset($_POST['deconnexion'])) {
 					}
 					else {
 
-						$user=new Soignant($id,$info['nom'], $info["prenom"], $info['sex'], $info['date_naissance'], $info['nativecountry'], $info['adresse'], $email, $line['droit']);
+						$user=new Soignant($id,$info['nom'], $info["prenom"], $info['sex'], $info['date_naissance'], $info['nativecountry'], $info['adresse'], $email, $line['droit'], $info['liste_patient']);
 
 					}
 
@@ -218,6 +218,35 @@ if (isset($_POST['deconnexion'])) {
 					<?php
 				}
 			}
-		}
+
+			else if (isset($_POST['ajout_patient'])){
+				$user=unserialize($_SESSION['user']);
+				$id_medecin=$user->getID();
+				$email_patient=$_POST['email'];
+				$req_id="SELECT * FROM `handicap`.`authentification` WHERE email LIKE '$email_patient'";
+				$res=$bdd->query($req_id);
+				$info=$res->fetch();
+				$id_patient=$info['id'];
+
+				$req2="SELECT * FROM `handicap`.`soignant` WHERE id='$id_medecin'";
+				$res2=$bdd->query($req2);
+				$liste_pat=$res2->fetch();
+				$liste_patient=$liste_pat['liste_patient'];
+
+				if(empty($liste_pat['liste_patient'])){
+					echo "<script>alert('true');</script>";
+					$new_liste_patient=$id_patient;
+				}
+				else $new_liste_patient=$liste_patient." ".$id_patient;
+
+
+				$user->setId_patients($new_liste_patient);
+
+				//echo "<script>alert('".$user->getId_patients()."');</script>";
+
+				$req_ajout_patient="UPDATE `handicap`.`soignant` SET `liste_patient`='$new_liste_patient' WHERE id='$id_medecin'";
+				$res=$bdd->query($req_ajout_patient);
+			}
+		//}
 
 ?>

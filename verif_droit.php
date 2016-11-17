@@ -54,7 +54,7 @@
 							<input type='submit' name='modif_passwd' value='Modifier mot de passe'>
 							</form>";
 							echo "<br /><p><a href='donnees.php' id='onglet'>Consulter et modifier vos données</a></p>";
-							echo "<br /><p><a href='donnees.php' id='onglet'>Consulter et modifier les données d'un patient</a></p>";
+							echo "<br /><p><a href='liste_patients.php' id='onglet'>Gestion des patients</a></p>";
 						}
 						else if($user->getDroit()==0){
 							echo "Bonjour Administrateur \n
