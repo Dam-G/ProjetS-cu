@@ -46,7 +46,7 @@
 						<tr>
 							<td><b>Nom</b></td>
 							<td><b>Prenom</b></td>
-							<td><b>Date de naissance</b></td>
+							<td><b>Age</b></td>
 							<td><b>Action</b></td>
 						</tr>
 						<?php
@@ -64,9 +64,18 @@
 								$user=unserialize($_SESSION['user']);
 								$id=$user->getId();
 								$proche=$_GET['quitter'];
+
+								$req_groupe="SELECT * FROM `handicap`.`groupes` WHERE id='$proche'";
+								$res_groupe=$bdd->query($req_groupe);
+								$groupe=$res_groupe->fetch();
+								$membres=$groupe['id_membres'];
+
+								$new_membres=str_replace($id, "", $membres);
 								$new_proches=str_replace($proche, "", $user->getId_proches());
 								$req_update="UPDATE `handicap`.`proche` SET id_proches='$new_proches' WHERE id='$id'";
 								$res_update=$bdd->query($req_update);
+								$req_update2="UPDATE `handicap`.`groupes` SET id_membres='$new_membres' WHERE id='$proche'";
+								$res_update2=$bdd->query($req_update2);
 								$user->setId_proches($new_proches);
 								$_SESSION['user']=serialize($user);
 							}
@@ -87,7 +96,7 @@
 									<tr>
 										<td>".$infos_patient['nom']."</td>
 										<td>".$infos_patient['prenom']."</td>
-										<td>".sql_to_date($infos_patient['date_naissance'])."</td>
+										<td>".$infos_patient['age']." ans</td>
 										<td><a href='donnees.php?patient=".$value."' title='Consulter les données'>Consulter les données</a> <a href='liste_proches.php?quitter=".$value."' title='Quitter le groupe'>Quitter le groupe</a></td>
 									</tr>
 									";
@@ -95,7 +104,14 @@
 
 							}
 						?>
-					</table>
+					</table><br/><br/>
+
+					<form id="rejoindre" action="accueil.php" method="post">
+					<label for="numero">Entrez l' e-mail d'un groupe que vous souhaitez rejoindre : </label>
+					<input type="text" name="email" id="email" required><br /><br />
+					<input type="submit" name="rejoindre_groupe" value="Valider">
+					</form>
+
 
 				</td>
 			</tr>

@@ -50,7 +50,7 @@
 						<tr>
 							<td><b>Nom</b></td>
 							<td><b>Prenom</b></td>
-							<td><b>Date de naissance</b></td>
+							<td><b>Age</b></td>
 							<td><b>Action</b></td>
 						</tr>
 						<?php
@@ -63,7 +63,7 @@
 									<tr>
 										<td>".$liste_medecins['nom']."</td>
 										<td>".$liste_medecins['prenom']."</td>
-										<td>".sql_to_date($liste_medecins['date_naissance'])."</td>
+										<td>".$liste_medecins['age']."</td>
 										<td><a href='validation.php?valid_medecin=".$liste_medecins['id']."' title='Valider'><img width=20px height=20px src='valide.png'></a> <a href='validation.php?refus_medecin=".$liste_medecins['id']."' title='Refuser'><img width=20px height=20px src='refus.png'></a></td>
 									</tr>
 									";

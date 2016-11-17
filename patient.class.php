@@ -6,8 +6,8 @@ class Patient extends Membre {
 	private $_data2;
 	private $_id_demandeurs;
 
-	public function __construct($id, $nom, $prenom, $sexe, $date_naissance, $pays_naissance, $adresse, $email, $droit, $id_demandeurs){
-		parent::__construct($id, $nom, $prenom, $sexe, $date_naissance, $pays_naissance, $adresse, $email, $droit);
+	public function __construct($id, $nom, $prenom, $sexe, $age, $pays_naissance, $adresse, $email, $droit, $id_demandeurs){
+		parent::__construct($id, $nom, $prenom, $sexe, $age, $pays_naissance, $adresse, $email, $droit);
 		$this->setId_demandeurs($id_demandeurs);
 		$this->setData1(null);
 		$this->setData2(null);

@@ -48,8 +48,8 @@
 
 
 
-					
-				        $date_naissance=sql_to_date($user->getDate_naissance());
+					if(!isset($_GET['patient'])){					
+				        $age=$user->getAge();
 						echo "<p id='titre'>DONNEES :</p>";
 						echo "<br /><br />
 						<fieldset id='affichage'>
@@ -57,7 +57,7 @@
 						    Nom: ".$user->getNom()."<br />
 						    Prénom: ".$user->getPrenom()."<br />
 						    Sexe: ".$user->getSexe()."<br />
-						    Date de naissance: ".$date_naissance."<br />
+						    Age: ".$age." ans<br />
 						    Pays de naissance: ".$user->getPays_naissance()."<br />
 						    Adresse: ".$user->getAdresse()."<br />
 						    E-mail: ".$user->getEmail()."<br />
@@ -68,8 +68,9 @@
 						<input type='submit' name='modif' value='Modifier/Ajouter des données'>
 						<input type='submit' name='suppr' value='Supprimer les données'>
 						</form>";
+					}
 
-					if(($user->getDroit()==2) && (isset($_GET['patient']))){
+					else if(($user->getDroit()==2)){
 
 						$id=$_GET['patient'];
 						$id_proche=$user->getId();
@@ -90,7 +91,7 @@
 							$req_patient="SELECT * FROM `handicap`.`patient` WHERE id='$id'";
 							$res_patient=$bdd->query($req_patient);
 							$patient=$res_patient->fetch();
-							$date_naissance=sql_to_date($patient['date_naissance']);
+							$age=$patient['age'];
 							echo "<p id='titre'>DONNEES DE ".$patient['prenom']." ".$patient['nom'].":</p>";
 							echo "<br /><br />
 							<fieldset id='affichage'>
@@ -98,7 +99,7 @@
 							    Nom: ".$patient['nom']."<br />
 							    Prénom: ".$patient['prenom']."<br />
 							    Sexe: ".$patient['sex']."<br />
-							    Date de naissance: ".$date_naissance."<br />
+							    Age: ".$age." ans<br />
 							    Pays de naissance: ".$patient['nativecountry']."<br />
 							    Adresse: ".$patient['adresse']."<br />
 
@@ -107,6 +108,44 @@
 
 						}
 
+					}
+					else if($user->getDroit()==3){
+
+						$id=$_GET['patient'];
+						$id_soignant=$user->getId();
+
+						//A MODIFIER POO
+						/*
+						$req_verif="SELECT * FROM `handicap`.`proche` WHERE id='$id_proche'";
+						$res_verif=$bdd->query($req_verif);
+						$verif=$res_verif->fetch();*/
+
+						$verif=$user->getId_patients();
+
+						$patients=explode(" ", $verif);
+
+						if(!in_array($id, $patients)) echo "Vous ne pouvez pas accéder à cette page, veuillez retourner à l'accueil !";
+						else{
+							
+							$req_patient="SELECT * FROM `handicap`.`patient` WHERE id='$id'";
+							$res_patient=$bdd->query($req_patient);
+							$patient=$res_patient->fetch();
+							$age=$patient['age'];
+							echo "<p id='titre'>DONNEES DE ".$patient['prenom']." ".$patient['nom'].":</p>";
+							echo "<br /><br />
+							<fieldset id='affichage'>
+							    <legend>Identité</legend>
+							    Nom: ".$patient['nom']."<br />
+							    Prénom: ".$patient['prenom']."<br />
+							    Sexe: ".$patient['sex']."<br />
+							    Age: ".$age." ans<br />
+							    Pays de naissance: ".$patient['nativecountry']."<br />
+							    Adresse: ".$patient['adresse']."<br />
+
+							</fieldset><br />
+							";
+
+						}
 					}
 
 

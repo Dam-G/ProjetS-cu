@@ -152,7 +152,7 @@
 						<tr>
 							<td><b>Nom</b></td>
 							<td><b>Prenom</b></td>
-							<td><b>Date de naissance</b></td>
+							<td><b>Age</b></td>
 							<td><b>Action</b></td>
 						</tr>
 						<?php
@@ -176,7 +176,7 @@
 									<tr>
 										<td>".$infos_demandeurs['nom']."</td>
 										<td>".$infos_demandeurs['prenom']."</td>
-										<td>".sql_to_date($infos_demandeurs['date_naissance'])."</td>
+										<td>".$infos_demandeurs['age']." ans</td>
 										<td><a href='groupe.php?valid_proche=".$value."' title='Valider'><img width=20px height=20px src='valide.png'></a> <a href='groupe.php?refus_proche=".$value."' title='Refuser'><img width=20px height=20px src='refus.png'></a></td>
 									</tr>
 									";
@@ -194,7 +194,7 @@
 						<tr>
 							<td><b>Nom</b></td>
 							<td><b>Prenom</b></td>
-							<td><b>Date de naissance</b></td>
+							<td><b>Age</b></td>
 							<td><b>Action</b></td>
 						</tr>
 						<?php
@@ -218,7 +218,7 @@
 									<tr>
 										<td>".$infos_membres['nom']."</td>
 										<td>".$infos_membres['prenom']."</td>
-										<td>".sql_to_date($infos_membres['date_naissance'])."</td>
+										<td>".$infos_membres['age']." ans</td>
 										<td><a href='groupe.php?supprime_proche=".$value."' title='Supprimer'>Supprimer du groupe</a></td>
 									</tr>
 									";

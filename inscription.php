@@ -33,9 +33,17 @@
 			            <option value="Female">Féminin</option>
 			            <option value="Male">Masculin</option>
 			        </select><br /><br />
-					Entrez votre date de naissance : <input type="date" name="date_naissance" id="date_naissance" size="50px" required><br /><p>Format de la date: jj/mm/aaaa</p>
+					<label for="age">Age : </label>
+					<select name="age" id="age" required>
+			            <?php
+			            	for ($i=15; $i < 120; $i++) { 
+			            		echo "<option value=$i>$i ans</option>";
+			            	}
+			            		
+			            ?>
+			        </select><br /><br />
 					<label for="pays_naiss">Pays de naissance : </label>
-					<select name="pays_naiss" id="pays_naiss">
+					<select name="pays_naiss" id="pays_naiss" required>
 			            <?php
 			            	include("pays.php");
 			            	foreach ($countryCode as $value) {
@@ -46,7 +54,7 @@
 					<input type="text" name="adresse" id="adresse" placeholder="Entrez votre adresse" size="50px" required><br /><br />
 					<input type="text" name="email" id="email" placeholder="Entrez votre adresse e-mail" size="50px" required><br /><br />
 					<label for="type_user">Choisissez le type d'utilisateur</label><br /><br />
-			        <select name="type_user" id="type_user">
+			        <select name="type_user" id="type_user" required>
 			            <option value="1">Patient</option>
 			            <option value="2">Proche de patient</option>
 			            <option value="3">Personnel soignant</option>

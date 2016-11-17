@@ -6,7 +6,7 @@ class Membre {
 	protected $_nom;
 	protected $_prenom;
 	protected $_sexe;
-	protected $_date_naissance;
+	protected $_age;
 	protected $_pays_naissance;
 	protected $_adresse;
 	protected $_email;
@@ -48,12 +48,12 @@ class Membre {
 		return $this->_sexe;
 	}
 
-	public function setDate_naissance($new_date_naissance){
-		$this->_date_naissance=$new_date_naissance;
+	public function setAge($new_age){
+		$this->_age=$new_age;
 	}
 
-	public function getDate_naissance(){
-		return $this->_date_naissance;
+	public function getAge(){
+		return $this->_age;
 	}
 
 	public function setPays_naissance($new_pays_naissance){
@@ -76,12 +76,12 @@ class Membre {
 		return $this->_email;
 	}
 
-	public function __construct($id, $nom, $prenom, $sexe, $date_naissance, $pays_naissance, $adresse, $email, $droit){
+	public function __construct($id, $nom, $prenom, $sexe, $age, $pays_naissance, $adresse, $email, $droit){
 		$this->_id=$id;
 		$this->_nom=$nom;
 		$this->_prenom=$prenom;
 		$this->_sexe=$sexe;
-		$this->_date_naissance=$date_naissance;
+		$this->_age=$age;
 		$this->_pays_naissance=$pays_naissance;
 		$this->_adresse=$adresse;
 		$this->_email=$email;

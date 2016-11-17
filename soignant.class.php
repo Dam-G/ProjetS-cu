@@ -5,8 +5,8 @@ class Soignant extends Membre{
 	private $_specialite;
 	private $_id_patients;
 
-	public function __construct($id, $nom, $prenom, $sexe, $date_naissance, $pays_naissance, $adresse, $email, $droit,$id_patients){
-		parent::__construct($id, $nom, $prenom, $sexe, $date_naissance, $pays_naissance, $adresse, $email, $droit);
+	public function __construct($id, $nom, $prenom, $sexe, $age, $pays_naissance, $adresse, $email, $droit,$id_patients){
+		parent::__construct($id, $nom, $prenom, $sexe, $age, $pays_naissance, $adresse, $email, $droit);
 		$this->setSpecialite(null);
 		$this->setId_patients($id_patients);
 	}

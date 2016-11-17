@@ -9,19 +9,19 @@ if (isset($_POST['deconnexion'])) {
 	//Il faut penser à supprimer le cookie !!
 }
 
-	/*	if (isset($_POST['valid_inscript']) or isset($_POST['valid_authentif']) or (isset($_POST['modif_passwd'])) or (isset($_POST['rejoindre_groupe']))){ */
+		/*if (isset($_POST['valid_inscript']) or isset($_POST['valid_authentif']) or (isset($_POST['modif_passwd'])) or (isset($_POST['rejoindre_groupe']))){ */
 
 			if(isset($_POST['valid_inscript'])){
 
 				$nom=htmlspecialchars($_POST['nom']);
 				$prenom=htmlspecialchars($_POST['prenom']);
 				$sexe=htmlspecialchars($_POST['sexe']);
-				$date_naissance=htmlspecialchars($_POST['date_naissance']);
+				$age=htmlspecialchars($_POST['age']);
 
 				//$date_naissance=date_to_sql($date_naissance);
 
 				$pays_naissance=htmlspecialchars($_POST['pays_naiss']);
-				$adresse=htmlspecialchars($_POST['adresse']);
+				$adresse=addslashes(htmlspecialchars($_POST['adresse']));
 				$email=htmlspecialchars($_POST['email']);
 				$droit=htmlspecialchars($_POST['type_user']);
 				$password=htmlspecialchars($_POST['password']);
@@ -59,7 +59,7 @@ if (isset($_POST['deconnexion'])) {
 					$id = $line2['id'];
 
 					if($droit==1){
-						$req3="INSERT INTO `handicap`.`patient` (`id`, `nom`, `prenom`, `sex`, `adresse`,`date_naissance`, `nativecountry`) VALUES ('$id','$nom','$prenom', '$sexe', '$adresse', '$date_naissance', '$pays_naissance')";
+						$req3="INSERT INTO `handicap`.`patient` (`id`, `nom`, `prenom`, `sex`, `adresse`,`age`, `nativecountry`) VALUES ('$id','$nom','$prenom', '$sexe', '$adresse', '$age', '$pays_naissance')";
 						$reponse3=$bdd->query($req3);
 
 						$req4="INSERT INTO `handicap`.`groupes` (`id`, `id_demandeurs`, `id_membres`) VALUES ('$id', null, null)";
@@ -67,11 +67,11 @@ if (isset($_POST['deconnexion'])) {
 					}
 
 					elseif($droit==2){
-						$req3="INSERT INTO `handicap`.`proche` (`id`, `nom`, `prenom`, `sex`, `adresse`,`date_naissance`, `nativecountry`, `tuteur`, `id_proches`) VALUES ('$id','$nom','$prenom', '$sexe', '$adresse', '$date_naissance', '$pays_naissance', 0, null)";
+						$req3="INSERT INTO `handicap`.`proche` (`id`, `nom`, `prenom`, `sex`, `adresse`,`age`, `nativecountry`, `tuteur`, `id_proches`) VALUES ('$id','$nom','$prenom', '$sexe', '$adresse', '$age', '$pays_naissance', 0, null)";
 						$reponse3=$bdd->query($req3);
 					}
 					else {
-						$req3="INSERT INTO `handicap`.`soignant` (`id`, `nom`, `prenom`, `sex`, `adresse`,`date_naissance`, `nativecountry`, `specialite`, `liste_patient`) VALUES ('$id','$nom','$prenom', '$sexe', '$adresse', '$date_naissance', '$pays_naissance', null, null)";
+						$req3="INSERT INTO `handicap`.`soignant` (`id`, `nom`, `prenom`, `sex`, `adresse`,`age`, `nativecountry`, `specialite`, `liste_patient`) VALUES ('$id','$nom','$prenom', '$sexe', '$adresse', '$age', '$pays_naissance', null, null)";
 						$reponse3=$bdd->query($req3);
 						//TODO
 
@@ -141,17 +141,17 @@ if (isset($_POST['deconnexion'])) {
 						$res_groupe=$bdd->query($req_groupe);
 						$groupe=$res_groupe->fetch();
 
-						$user=new Patient($id,$info['nom'], $info["prenom"], $info['sex'], $info['date_naissance'], $info['nativecountry'], $info['adresse'], $email, $line['droit'], $groupe['id_demandeurs']);
+						$user=new Patient($id,$info['nom'], $info["prenom"], $info['sex'], $info['age'], $info['nativecountry'], $info['adresse'], $email, $line['droit'], $groupe['id_demandeurs']);
 
 					}
 					else if($line['droit']==2) {
 
-						$user=new Proche($id,$info['nom'], $info["prenom"], $info['sex'], $info['date_naissance'], $info['nativecountry'], $info['adresse'], $email, $line['droit'], $info['id_proches']);
+						$user=new Proche($id,$info['nom'], $info["prenom"], $info['sex'], $info['age'], $info['nativecountry'], $info['adresse'], $email, $line['droit'], $info['tuteur'], $info['id_proches']);
 
 					}
 					else {
 
-						$user=new Soignant($id,$info['nom'], $info["prenom"], $info['sex'], $info['date_naissance'], $info['nativecountry'], $info['adresse'], $email, $line['droit'], $info['liste_patient']);
+						$user=new Soignant($id,$info['nom'], $info["prenom"], $info['sex'], $info['age'], $info['nativecountry'], $info['adresse'], $email, $line['droit'], $info['liste_patient']);
 
 					}
 
@@ -192,16 +192,17 @@ if (isset($_POST['deconnexion'])) {
 			else if(isset($_POST['rejoindre_groupe'])){
 				$user=unserialize($_SESSION['user']);
 				$user_id=$user->getId();
-				$id=htmlspecialchars($_POST['numero']);
-				$req_droit="SELECT * FROM `handicap`.`authentification` WHERE id='$id'";
+				$email=htmlspecialchars($_POST['email']);
+				$req_droit="SELECT * FROM `handicap`.`authentification` WHERE email LIKE '$email'";
 				$info_droit=$bdd->query($req_droit);
-				$droit=$info_droit->fetch();
-				$droit = $droit['droit'];
+				$patient=$info_droit->fetch();
+				$droit = $patient['droit'];
+				$id=$patient['id'];
 
 				if($droit==1){
 					$req_patient="SELECT * FROM `handicap`.`groupes` WHERE id='$id'";
-					$patient=$bdd->query($req_patient);
-					$info_patient=$patient->fetch();
+					$res_patient=$bdd->query($req_patient);
+					$info_patient=$res_patient->fetch();
 
 					if(empty($info_patient['id_demandeurs'])){
 						$new_demandeurs=$user_id;
@@ -218,7 +219,7 @@ if (isset($_POST['deconnexion'])) {
 					<?php
 				}
 			}
-
+		//}
 			else if (isset($_POST['ajout_patient'])){
 				$user=unserialize($_SESSION['user']);
 				$id_medecin=$user->getID();
@@ -228,25 +229,32 @@ if (isset($_POST['deconnexion'])) {
 				$info=$res->fetch();
 				$id_patient=$info['id'];
 
-				$req2="SELECT * FROM `handicap`.`soignant` WHERE id='$id_medecin'";
-				$res2=$bdd->query($req2);
-				$liste_pat=$res2->fetch();
-				$liste_patient=$liste_pat['liste_patient'];
 
-				if(empty($liste_pat['liste_patient'])){
-					echo "<script>alert('true');</script>";
-					$new_liste_patient=$id_patient;
-				}
-				else $new_liste_patient=$liste_patient." ".$id_patient;
+				if($info['droit']==1){
+					$req2="SELECT * FROM `handicap`.`soignant` WHERE id='$id_medecin'";
+					$res2=$bdd->query($req2);
+					$liste_pat=$res2->fetch();
+					$liste_patient=$liste_pat['liste_patient'];
+
+					$array_patient=explode(" ", $liste_patient);
+					if(!in_array($id_patient, $array_patient)){
+
+						if(empty($liste_pat['liste_patient'])){
+							$new_liste_patient=$id_patient;
+						}
+						else $new_liste_patient=$liste_patient." ".$id_patient;
 
 
-				$user->setId_patients($new_liste_patient);
+						$user->setId_patients($new_liste_patient);
 
 				//echo "<script>alert('".$user->getId_patients()."');</script>";
 
-				$req_ajout_patient="UPDATE `handicap`.`soignant` SET `liste_patient`='$new_liste_patient' WHERE id='$id_medecin'";
-				$res=$bdd->query($req_ajout_patient);
+						$req_ajout_patient="UPDATE `handicap`.`soignant` SET `liste_patient`='$new_liste_patient' WHERE id='$id_medecin'";
+						$res=$bdd->query($req_ajout_patient);
+
+						$_SESSION['user']=serialize($user);
+					}
+				}
 			}
-		//}
 
 ?>

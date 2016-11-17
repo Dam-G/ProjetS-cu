@@ -41,8 +41,7 @@
 							<input type='submit' name='modif_passwd' value='Modifier mot de passe'>
 							</form>";
 							echo "<br /><p><a href='donnees.php' id='onglet'>Consulter et modifier vos données</a></p>";
-							echo "<br /><p><a href='liste_proches.php' id='onglet'>Consulter les données de vos proches</a></p>";
-							echo "<br /><p><a href='rejoindre_groupe.php' id='onglet'>Rejoindre un groupe</a></p>";
+							echo "<br /><p><a href='liste_proches.php' id='onglet'>Consulter votre liste de patients proches</a></p>";
 						}
 						else if($user->getDroit()==3){
 							echo "Bonjour ".$user->getPrenom()." ".$user->getNom()."\n
