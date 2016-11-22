@@ -61,6 +61,7 @@
 			        </select><br /><br />
 					<input type="password" name="password" id="password" placeholder="Entrez votre mot de passe" size="50px" required><br /><br />
 					<input type="password" name="verif_passwd" id="verif_passwd" placeholder="Entrez à nouveau le mot de passe" size="50px" required><br /><br />
+					<label><input type="checkbox" name="tuteur" id="tuteur" > Demander un tuteur</label><br /><br />
 					<label for="captcha">Recopiez le mot : <img src="captcha.php" alt="Captcha" /></label><br /><br />
 					<input type="text" name="captcha" id="captcha"  required><br /><br />
 					<input type="submit" name="valid_inscript" value="Valider">

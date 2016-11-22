@@ -64,6 +64,22 @@ if (isset($_POST['deconnexion'])) {
 
 						$req4="INSERT INTO `handicap`.`groupes` (`id`, `id_demandeurs`, `id_membres`) VALUES ('$id', null, null)";
 						$reponse4=$bdd->query($req4);
+
+						//Politique de partage (par défaut, données sensibles non visibles par groupe et soignant)
+						$req5="INSERT INTO `handicap`.`politique` (`id`, `pol_groupe`, `pol_soignant`) VALUES ('$id', 0, 0)";
+						$reponse5=$bdd->query($req5);
+
+						//Données sensibles
+						$req6="INSERT INTO `handicap`.`privat` (`Idp`) VALUES ('$id')";
+						$reponse6=$bdd->query($req6);
+
+						if(isset($_POST['tuteur'])){
+							$req7="INSERT INTO `handicap`.`tuteurs` (`id`, `id_demandeurs`, `id_tuteur`) VALUES ('$id', null, null)";
+							$reponse7=$bdd->query($req7);
+						}
+
+						
+
 					}
 
 					elseif($droit==2){
@@ -114,8 +130,8 @@ if (isset($_POST['deconnexion'])) {
 
 			else if(isset($_POST['valid_authentif'])){
 
-				$email=$_POST['email'];
-				$password=$_POST['password'];
+				$email=htmlspecialchars($_POST['email']);
+				$password=htmlspecialchars($_POST['password']);
 				$req_auth="SELECT * FROM `handicap`.`authentification` WHERE email='$email'";
 				$res_auth = $bdd->query($req_auth);
 				$line = $res_auth->fetch();
@@ -170,9 +186,9 @@ if (isset($_POST['deconnexion'])) {
 			else if(isset($_POST['modif_passwd'])){
 				$user=unserialize($_SESSION['user']);
 				$id=$user->getId();
-				$password=$_POST['password'];
-				$new_passwd=$_POST['new_passwd'];
-				$confirm_passwd=$_POST['confirm_passwd'];
+				$password=htmlspecialchars($_POST['password']);
+				$new_passwd=htmlspecialchars($_POST['new_passwd']);
+				$confirm_passwd=htmlspecialchars($_POST['confirm_passwd']);
 				$new_passwd_hashe=password_hash($new_passwd, PASSWORD_BCRYPT);
 				$req_mdp="SELECT * FROM `handicap`.`authentification` WHERE id='$id'";
 				$res_mdp=$bdd->query($req_mdp);
@@ -223,7 +239,7 @@ if (isset($_POST['deconnexion'])) {
 			else if (isset($_POST['ajout_patient'])){
 				$user=unserialize($_SESSION['user']);
 				$id_medecin=$user->getID();
-				$email_patient=$_POST['email'];
+				$email_patient=htmlspecialchars($_POST['email']);
 				$req_id="SELECT * FROM `handicap`.`authentification` WHERE email LIKE '$email_patient'";
 				$res=$bdd->query($req_id);
 				$info=$res->fetch();
@@ -255,6 +271,48 @@ if (isset($_POST['deconnexion'])) {
 						$_SESSION['user']=serialize($user);
 					}
 				}
+			}
+
+			else if(isset($_POST['demande_tuteur'])){
+
+				$user=unserialize($_SESSION['user']);
+				$user_id=$user->getId();
+				$email=htmlspecialchars($_POST['email']);
+				$req_droit="SELECT * FROM `handicap`.`authentification` WHERE email LIKE '$email'";
+				$info_droit=$bdd->query($req_droit);
+				$patient=$info_droit->fetch();
+				$droit = $patient['droit'];
+				$id = $patient['id'];
+				$tuteur=$user->getTuteur();
+
+				if($droit==1){
+					if($tuteur==0){
+						$req_patient="SELECT * FROM `handicap`.`tuteurs` WHERE id='$id'";
+						$res_patient=$bdd->query($req_patient);
+						if(!empty($res_patient)){
+							$info_patient=$res_patient->fetch();
+
+							if(empty($info_patient['id_demandeurs'])){
+								$new_demandeurs=$user_id;
+							}
+							else{
+								$new_demandeurs=$info_patient['id_demandeurs']." ".$user_id;
+							}
+
+							if(!in_array($user_id, explode(' ', $info_patient['id_demandeurs']))){//Pour éviter qu'un proche fasse plusieurs fois une même demande
+								$req_update="UPDATE `handicap`.`tuteurs` SET `id_demandeurs`='$new_demandeurs' WHERE id='$id'";
+								$update=$bdd->query($req_update);}
+
+							echo '<script>alert("Demande de tutorat effectuée. En attente de réponse.");</script>';
+						}
+					}
+					else echo '<script>alert("Vous êtes déjà tuteur d\'un patient !");</script>';
+
+				}
+
+
+
+
 			}
 
 ?>

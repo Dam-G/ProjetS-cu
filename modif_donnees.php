@@ -62,34 +62,62 @@
 						    Pays de naissance: <input type="text" name="pays_naiss" value="'.$user->getPays_naissance().'" required></br>
 						    Adresse: <input type="text" name="adresse" value="'.$user->getAdresse().'" required></br>
 						    E-Mail: <input type="text" name="email" value="'.$user->getEmail().'" required></br>
-						</fieldset></br>
-						<input type="submit" name="valid_modif" value="VALIDER">
-						</form>';
+						</fieldset></br>';
+
+						$req_sens="SELECT * FROM `handicap`.`privat` WHERE Idp='".$user->getId()."'";
+						$res_sens=$bdd->query($req_sens);
+						$sens=$res_sens->fetch();
+
+						echo "<fieldset id='affichage'>
+						    <legend>Données médicales</legend>
+						    Num: <input type='text' name='num' value='".$sens['num']."' ></br>
+						    Maladie: <input type='text' name='maladie' value='".$sens['caractere']."'></br></fieldset></br>
+						   
+						<input type='submit' name='valid_modif' value='VALIDER'>
+						</form>";
 					}
 					else if(isset($_POST['valid_modif'])){
 
-						$user->setNom($_POST['nom']);
-						$user->setPrenom($_POST['prenom']);
-						$user->setAge($_POST['age']);
-						$user->setAdresse($_POST['adresse']);
-						$user->setEmail($_POST['email']);
-						$user->setPays_naissance($_POST['pays_naiss']);
+						$nom=htmlspecialchars($_POST['nom']);
+						$prenom=htmlspecialchars($_POST['prenom']);
+						$age=htmlspecialchars($_POST['age']);
+						$adresse=htmlspecialchars($_POST['adresse']);
+						$email=htmlspecialchars($_POST['email']);
+						$pays_naiss=htmlspecialchars($_POST['pays_naiss']);
+
+						$user->setNom($nom);
+						$user->setPrenom($prenom);
+						$user->setAge($age);
+						$user->setAdresse($adresse);
+						$user->setEmail($email);
+						$user->setPays_naissance($pays_naiss);
 
 						$_SESSION['user']=serialize($user);
 
 						$update="UPDATE `handicap`.`".$table."` SET
-						`nom`='".htmlspecialchars($_POST['nom'])."',
-						`prenom`='".htmlspecialchars($_POST['prenom'])."',
-						`age`='".htmlspecialchars($_POST['age'])."',
-						`adresse`='".addslashes(htmlspecialchars($_POST['adresse']))."',
-						`nativecountry`='".htmlspecialchars($_POST['pays_naiss'])."'
+						`nom`='$nom',
+						`prenom`='$prenom',
+						`age`='$age',
+						`adresse`='$adresse',
+						`nativecountry`='$pays_naiss'
 						WHERE `id`='".$user->getId()."'";
 						$update2="UPDATE `handicap`.`authentification` SET
-						`email`='".htmlspecialchars($_POST['email'])."'
+						`email`='$email'
 						WHERE `id`='".$user->getId()."';";
+
+						$num=htmlspecialchars($_POST['num']);
+						$maladie=htmlspecialchars($_POST['maladie']);
+
+						$update3="UPDATE `handicap`.`privat` SET
+						`num`='$num',
+						`caractere`='$maladie'
+						WHERE `Idp`='".$user->getId()."';";
+
 						$update_res=$bdd->query($update)
 							or die("Impossible de mettre à jour : " . mysql_error());
 						$update_res2=$bdd->query($update2)
+							or die("Impossible de mettre à jour : " . mysql_error());
+						$update_res3=$bdd->query($update3)
 							or die("Impossible de mettre à jour : " . mysql_error());
 						echo "<img width=20px height=20px src='valide.png'>  Données enregistrées";
 					}
@@ -98,7 +126,101 @@
 						$suppr=$bdd->query($req_suppr)
 							or die("Impossible de supprimer : " . mysql_error());
 					}
+
+					else if(isset($_POST['modif_tutelle'])){
+						$id=$user->getTuteur();
+						if(empty($id)){ header("Location: accueil.php"); exit();}
+						else{
+							$req_infos="SELECT * FROM `handicap`.`patient` WHERE id=$id";
+							$res_infos=$bdd->query($req_infos);
+							$infos_patient=$res_infos->fetch();
+
+							$req_infos2="SELECT * FROM `handicap`.`authentification` WHERE id=$id";
+							$res_infos2=$bdd->query($req_infos2);
+							$infos_patient2=$res_infos2->fetch();
+
+							echo "<p id='titre'>DONNEES DE ".$infos_patient['prenom']." ".$infos_patient['nom']." :</p>";
+							echo "</br></br>
+							<form id='donnees' action='modif_donnees.php' method='post'>
+							<fieldset id='affichage'>
+							    <legend>Identité</legend>
+							    Nom: <input type='text' name='nom' value='".$infos_patient['nom']."' required></br>
+							    Prénom: <input type='text' name='prenom' value='".$infos_patient['prenom']."'required></br>
+							    <label for='age'>Age : </label>
+								<select name='age' id='age' value='".$infos_patient['age']."' required>";
+						            
+						            	for ($i=15; $i < 120; $i++) {
+						            		if ($i==$infos_patient['age']) echo "<option selected='selected' value=$i>$i ans</option>";
+						            		else echo "<option value=$i>$i ans</option>";
+						            	}
+						            		
+						     echo'
+						        </select><br />
+							    Pays de naissance: <input type="text" name="pays_naiss" value="'.$infos_patient['nativecountry'].'" required></br>
+							    Adresse: <input type="text" name="adresse" value="'.$infos_patient['adresse'].'" required></br>
+							    E-Mail: <input type="text" name="email" value="'.$infos_patient2['email'].'" required></br>
+							</fieldset></br>';
+
+							$req_sens="SELECT * FROM `handicap`.`privat` WHERE Idp='$id'";
+							$res_sens=$bdd->query($req_sens);
+							$sens=$res_sens->fetch();
+
+							echo "<fieldset id='affichage'>
+							    <legend>Données médicales</legend>
+							    Num: <input type='text' name='num' value='".$sens['num']."' ></br>
+							    Maladie: <input type='text' name='maladie' value='".$sens['caractere']."'></br></fieldset></br>
+
+							<input type='submit' name='valid_modif_tutelle' value='VALIDER'>
+							</form>";
+						}
+					}
+
+					else if(isset($_POST['valid_modif_tutelle'])){
+
+						$id=$user->getTuteur();
+						if(empty($id)){ header("Location: accueil.php"); exit();}
+						else{
+
+							$nom=htmlspecialchars($_POST['nom']);
+							$prenom=htmlspecialchars($_POST['prenom']);
+							$age=htmlspecialchars($_POST['age']);
+							$adresse=htmlspecialchars($_POST['adresse']);
+							$email=htmlspecialchars($_POST['email']);
+							$pays_naiss=htmlspecialchars($_POST['pays_naiss']);
+
+							$num=htmlspecialchars($_POST['num']);
+							$maladie=htmlspecialchars($_POST['maladie']);
+
+							$update="UPDATE `handicap`.`patient` SET
+							`nom`='".$nom."',
+							`prenom`='".$prenom."',
+							`age`='".$age."',
+							`adresse`='".$adresse."',
+							`nativecountry`='".$pays_naiss."'
+							WHERE `id`='".$id."'";
+
+							$update2="UPDATE `handicap`.`authentification` SET
+							`email`='".$email."'
+							WHERE `id`='".$id."';";
+
+							$update3="UPDATE `handicap`.`privat` SET
+							`num`='$num',
+							`caractere`='$maladie'
+							WHERE `Idp`='$id';";
+
+							$update_res=$bdd->query($update)
+								or die("Impossible de mettre à jour : " . mysql_error());
+							$update_res2=$bdd->query($update2)
+								or die("Impossible de mettre à jour : " . mysql_error());
+							$update_res3=$bdd->query($update3)
+								or die("Impossible de mettre à jour : " . mysql_error());
+							echo "<img width=20px height=20px src='valide.png'>  Données enregistrées";
+						}
+					}
+
 					?>
+
+
 
 				</td>
 			</tr>

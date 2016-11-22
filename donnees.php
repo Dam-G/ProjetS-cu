@@ -48,7 +48,7 @@
 
 
 
-					if(!isset($_GET['patient'])){					
+					if((!isset($_GET['patient'])) && (!isset($_GET['tutelle']))) {					
 				        $age=$user->getAge();
 						echo "<p id='titre'>DONNEES :</p>";
 						echo "<br /><br />
@@ -64,16 +64,109 @@
 
 						</fieldset><br />
 						";
+
+						if($user->getDroit()==1){
+
+							$req_sens="SELECT * FROM `handicap`.`privat` WHERE Idp='".$user->getId()."'";
+							$res_sens=$bdd->query($req_sens);
+							$sens=$res_sens->fetch();
+
+							if(empty($sens['num'])){
+								$num='Données non renseignées';
+							}
+							else $num=$sens['num'];
+
+							if(empty($sens['caractere'])){
+								$maladie='Données non renseignées';
+							}
+							else $maladie=$sens['caractere'];
+
+							echo "
+							<fieldset id='affichage'>
+							    <legend>Données médicales</legend>
+							    Num: ".$num."<br />
+							    Maladie: ".$maladie."<br />
+
+							</fieldset><br />
+							";
+						}
+
 						echo "<form action='modif_donnees.php' method='post'>
 						<input type='submit' name='modif' value='Modifier/Ajouter des données'>
 						<input type='submit' name='suppr' value='Supprimer les données'>
 						</form>";
+
 					}
 
-					else if(($user->getDroit()==2)){
+					else if((isset($_GET['patient'])) && ($user->getDroit()==2)) {
 
 						$id=$_GET['patient'];
 						$id_proche=$user->getId();
+
+						$verif=$user->getId_proches();
+
+						$proches=explode(" ", $verif);
+
+						if(!in_array($id, $proches)) echo "Vous ne pouvez pas accéder à cette page, veuillez retourner à l'accueil !";
+						else{
+
+							$req_pol="SELECT * FROM `handicap`.`politique` WHERE id=$id";
+							$res_pol=$bdd->query($req_pol);
+							$pol=$res_pol->fetch();
+
+							
+							
+							$req_patient="SELECT * FROM `handicap`.`patient` WHERE id='$id'";
+							$res_patient=$bdd->query($req_patient);
+							$patient=$res_patient->fetch();
+							$age=$patient['age'];
+							echo "<p id='titre'>DONNEES DE ".$patient['prenom']." ".$patient['nom'].":</p>";
+							echo "<br /><br />
+							<fieldset id='affichage'>
+							    <legend>Identité</legend>
+							    Nom: ".$patient['nom']."<br />
+							    Prénom: ".$patient['prenom']."<br />
+							    Sexe: ".$patient['sex']."<br />
+							    Age: ".$age." ans<br />
+							    Pays de naissance: ".$patient['nativecountry']."<br />
+							    Adresse: ".$patient['adresse']."<br />
+							</fieldset><br />
+							";
+
+							if($pol['pol_groupe']==1){
+
+								$req_privat="SELECT * FROM `handicap`.`privat` WHERE Idp='$id'";
+								$res_privat=$bdd->query($req_privat);
+								$privat=$res_privat->fetch();
+
+								if(empty($privat['num'])){
+									$num='Données non renseignées';
+								}
+								else $num=$privat['num'];
+
+								if(empty($privat['caractere'])){
+									$maladie='Données non renseignées';
+								}
+								else $maladie=$privat['caractere'];
+
+								echo "
+								<fieldset id='affichage'>
+								    <legend>Données médicales</legend>
+								    Num: ".$num."<br />
+								    Maladie: ".$maladie."<br />
+								</fieldset><br />
+								";
+
+							}
+
+						}
+
+					}
+
+					else if((isset($_GET['tutelle'])) && ($user->getDroit()==2)) {
+
+						$id_proche=$user->getId();
+						$id=$user->getTuteur();
 
 						//A MODIFIER POO
 						/*
@@ -81,11 +174,7 @@
 						$res_verif=$bdd->query($req_verif);
 						$verif=$res_verif->fetch();*/
 
-						$verif=$user->getId_proches();
-
-						$proches=explode(" ", $verif);
-
-						if(!in_array($id, $proches)) echo "Vous ne pouvez pas accéder à cette page, veuillez retourner à l'accueil !";
+						if(empty($id)) echo "Vous ne pouvez pas accéder à cette page, veuillez retourner à l'accueil !";
 						else{
 							
 							$req_patient="SELECT * FROM `handicap`.`patient` WHERE id='$id'";
@@ -106,9 +195,37 @@
 							</fieldset><br />
 							";
 
+							$req_privat="SELECT * FROM `handicap`.`privat` WHERE Idp='$id'";
+							$res_privat=$bdd->query($req_privat);
+							$privat=$res_privat->fetch();
+
+							if(empty($privat['num'])){
+								$num='Données non renseignées';
+							}
+							else $num=$privat['num'];
+
+							if(empty($privat['caractere'])){
+								$maladie='Données non renseignées';
+							}
+							else $maladie=$privat['caractere'];
+	
+							echo "
+							<fieldset id='affichage'>
+							    <legend>Données médicales</legend>
+							    Num: ".$num."<br />
+							    Maladie: ".$maladie."<br />
+							</fieldset><br />
+							";
+
+							echo "<form action='modif_donnees.php' method='post'>
+							<input type='submit' name='modif_tutelle' value='Modifier/Ajouter des données'>
+							<input type='submit' name='suppr' value='Supprimer les données'>
+							</form>";
+
 						}
 
 					}
+
 					else if($user->getDroit()==3){
 
 						$id=$_GET['patient'];
@@ -126,6 +243,10 @@
 
 						if(!in_array($id, $patients)) echo "Vous ne pouvez pas accéder à cette page, veuillez retourner à l'accueil !";
 						else{
+
+							$req_pol="SELECT * FROM `handicap`.`politique` WHERE id=$id";
+							$res_pol=$bdd->query($req_pol);
+							$pol=$res_pol->fetch();
 							
 							$req_patient="SELECT * FROM `handicap`.`patient` WHERE id='$id'";
 							$res_patient=$bdd->query($req_patient);
@@ -144,6 +265,32 @@
 
 							</fieldset><br />
 							";
+
+							if($pol['pol_soignant']==1){
+
+								$req_privat="SELECT * FROM `handicap`.`privat` WHERE Idp='$id'";
+								$res_privat=$bdd->query($req_privat);
+								$privat=$res_privat->fetch();
+
+								if(empty($privat['num'])){
+									$num='Données non renseignées';
+								}
+								else $num=$privat['num'];
+
+								if(empty($privat['caractere'])){
+									$maladie='Données non renseignées';
+								}
+								else $maladie=$privat['caractere'];
+
+								echo "
+								<fieldset id='affichage'>
+								    <legend>Données médicales</legend>
+								    Num: ".$num."<br />
+								    Maladie: ".$maladie."<br />
+								</fieldset><br />
+								";
+
+							}
 
 						}
 					}

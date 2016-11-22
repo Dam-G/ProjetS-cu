@@ -18,5 +18,17 @@ function sql_to_date($date){
 
 }
 
+function filtrage($texte){
+
+	$texte=strip_tags($texte);
+
+	if(strstr($texte, "<"))
+		$texte=str_replace("<", "&lt;", $texte);
+	if(strstr($texte, ">"))
+		$texte=str_replace(">", "&gt;", $texte);
+	
+	return $texte;
+}
+
 
 ?>
