@@ -14,6 +14,7 @@
 		session_start();
 
 		include("config_sql.php");
+		include("function.php");
 
 		if (isset($_SESSION['user'])){
 			$user=unserialize($_SESSION['user']);
@@ -52,8 +53,8 @@
 
 							if(isset($_POST['valid_polit'])){
 
-								$pol_groupe=htmlspecialchars($_POST['handicap_proche']);
-								$pol_soignant=htmlspecialchars($_POST['handicap_soignant']);
+								$pol_groupe=filtrage($_POST['handicap_proche']);
+								$pol_soignant=filtrage($_POST['handicap_soignant']);
 
 								$req_pol="UPDATE `handicap`.`politique` SET `pol_groupe`=$pol_groupe, `pol_soignant`=$pol_soignant WHERE id='".$user->getId()."'";
 								$res_pol=$bdd->query($req_pol);
@@ -103,8 +104,8 @@
 
 							if(isset($_POST['valid_polit'])){
 
-								$pol_groupe=htmlspecialchars($_POST['handicap_proche']);
-								$pol_soignant=htmlspecialchars($_POST['handicap_soignant']);
+								$pol_groupe=filtrage($_POST['handicap_proche']);
+								$pol_soignant=filtrage($_POST['handicap_soignant']);
 
 								$req_pol="UPDATE `handicap`.`politique` SET `pol_groupe`=$pol_groupe, `pol_soignant`=$pol_soignant WHERE id='".$user->getTuteur()."'";
 								$res_pol=$bdd->query($req_pol);

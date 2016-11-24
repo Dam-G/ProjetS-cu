@@ -14,6 +14,7 @@
 		session_start();
 
 		include("config_sql.php");
+		include("function.php");
 
 		if(!isset($_SESSION['user'])) header("Location: accueil.php");
 
@@ -43,14 +44,14 @@
 
 					if(isset($_POST['modif'])){
 						echo "<p id='titre'>DONNEES DE ".$user->getPrenom()." ".$user->getNom()." :</p>";
-						echo "</br></br>
-						<form id='donnees' action='modif_donnees.php' method='post'>
-						<fieldset id='affichage'>
+						echo '</br></br>
+						<form id="donnees" action="modif_donnees.php" method="post">
+						<fieldset id="affichage">
 						    <legend>Identité</legend>
-						    Nom: <input type='text' name='nom' value='".$user->getNom()."' required></br>
-						    Prénom: <input type='text' name='prenom' value='".$user->getPrenom()."'required></br>
-						    <label for='age'>Age : </label>
-							<select name='age' id='age' value='".$user->getAge()."' required>";
+						    Nom: <input type="text" name="nom" value="'.$user->getNom().'" required></br>
+						    Prénom: <input type="text" name="prenom" value="'.$user->getPrenom().'" required></br>
+						    <label for="age">Age : </label>
+							<select name="age" id="age" value="'.$user->getAge().'" required>';
 					            
 					            	for ($i=15; $i < 120; $i++) {
 					            		if ($i==$user->getAge()) echo "<option selected='selected' value=$i>$i ans</option>";
@@ -64,26 +65,29 @@
 						    E-Mail: <input type="text" name="email" value="'.$user->getEmail().'" required></br>
 						</fieldset></br>';
 
-						$req_sens="SELECT * FROM `handicap`.`privat` WHERE Idp='".$user->getId()."'";
-						$res_sens=$bdd->query($req_sens);
-						$sens=$res_sens->fetch();
+						if($user->getDroit()==1){
 
-						echo "<fieldset id='affichage'>
-						    <legend>Données médicales</legend>
-						    Num: <input type='text' name='num' value='".$sens['num']."' ></br>
-						    Maladie: <input type='text' name='maladie' value='".$sens['caractere']."'></br></fieldset></br>
+							$req_sens="SELECT * FROM `handicap`.`privat` WHERE Idp='".$user->getId()."'";
+							$res_sens=$bdd->query($req_sens);
+							$sens=$res_sens->fetch();
+
+							echo '<fieldset id="affichage">
+							    <legend>Données médicales</legend>
+							    Num: <input type="text" name="num" value="'.$sens['num'].'" ></br>
+							    Maladie: <input type="text" name="maladie" value="'.$sens['caractere'].'"></br></fieldset></br>';
+						}
 						   
-						<input type='submit' name='valid_modif' value='VALIDER'>
+						echo "<input type='submit' name='valid_modif' value='VALIDER'>
 						</form>";
 					}
 					else if(isset($_POST['valid_modif'])){
 
-						$nom=htmlspecialchars($_POST['nom']);
-						$prenom=htmlspecialchars($_POST['prenom']);
-						$age=htmlspecialchars($_POST['age']);
-						$adresse=htmlspecialchars($_POST['adresse']);
-						$email=htmlspecialchars($_POST['email']);
-						$pays_naiss=htmlspecialchars($_POST['pays_naiss']);
+						$nom=filtrage($_POST['nom']);
+						$prenom=filtrage($_POST['prenom']);
+						$age=filtrage($_POST['age']);
+						$adresse=filtrage($_POST['adresse']);
+						$email=filtrage($_POST['email']);
+						$pays_naiss=filtrage($_POST['pays_naiss']);
 
 						$user->setNom($nom);
 						$user->setPrenom($prenom);
@@ -93,6 +97,11 @@
 						$user->setPays_naissance($pays_naiss);
 
 						$_SESSION['user']=serialize($user);
+
+						$adresse=addslashes($adresse);
+						$nom=addslashes($nom);
+						$prenom=addslashes($prenom);
+						$pays_naiss=addslashes($pays_naiss);
 
 						$update="UPDATE `handicap`.`".$table."` SET
 						`nom`='$nom',
@@ -105,27 +114,28 @@
 						`email`='$email'
 						WHERE `id`='".$user->getId()."';";
 
-						$num=htmlspecialchars($_POST['num']);
-						$maladie=htmlspecialchars($_POST['maladie']);
+						if($user->getDroit()==1){
+							$num=filtrage($_POST['num']);
+							$num=addslashes($num);
+							$maladie=filtrage($_POST['maladie']);
+							$maladie=addslashes($maladie);
 
-						$update3="UPDATE `handicap`.`privat` SET
-						`num`='$num',
-						`caractere`='$maladie'
-						WHERE `Idp`='".$user->getId()."';";
+							$update3="UPDATE `handicap`.`privat` SET
+							`num`='$num',
+							`caractere`='$maladie'
+							WHERE `Idp`='".$user->getId()."';";
+
+							$update_res3=$bdd->query($update3)
+								or die("Impossible de mettre à jour : " . mysql_error());
+						}
 
 						$update_res=$bdd->query($update)
 							or die("Impossible de mettre à jour : " . mysql_error());
 						$update_res2=$bdd->query($update2)
 							or die("Impossible de mettre à jour : " . mysql_error());
-						$update_res3=$bdd->query($update3)
-							or die("Impossible de mettre à jour : " . mysql_error());
 						echo "<img width=20px height=20px src='valide.png'>  Données enregistrées";
 					}
-					else if(isset($_POST['suppr'])){
-						$req_suppr="DELETE FROM `handicap`.`donnees` WHERE `id`='".$user->getId()."'";
-						$suppr=$bdd->query($req_suppr)
-							or die("Impossible de supprimer : " . mysql_error());
-					}
+
 
 					else if(isset($_POST['modif_tutelle'])){
 						$id=$user->getTuteur();
@@ -140,14 +150,14 @@
 							$infos_patient2=$res_infos2->fetch();
 
 							echo "<p id='titre'>DONNEES DE ".$infos_patient['prenom']." ".$infos_patient['nom']." :</p>";
-							echo "</br></br>
-							<form id='donnees' action='modif_donnees.php' method='post'>
-							<fieldset id='affichage'>
+							echo '</br></br>
+							<form id="donnees" action="modif_donnees.php" method="post">
+							<fieldset id="affichage">
 							    <legend>Identité</legend>
-							    Nom: <input type='text' name='nom' value='".$infos_patient['nom']."' required></br>
-							    Prénom: <input type='text' name='prenom' value='".$infos_patient['prenom']."'required></br>
-							    <label for='age'>Age : </label>
-								<select name='age' id='age' value='".$infos_patient['age']."' required>";
+							    Nom: <input type="text" name="nom" value="'.$infos_patient['nom'].'" required></br>
+							    Prénom: <input type="text" name="prenom" value="'.$infos_patient['prenom'].'" required></br>
+							    <label for="age">Age : </label>
+								<select name="age" id="age" value="'.$infos_patient['age'].'" required>';
 						            
 						            	for ($i=15; $i < 120; $i++) {
 						            		if ($i==$infos_patient['age']) echo "<option selected='selected' value=$i>$i ans</option>";
@@ -165,13 +175,13 @@
 							$res_sens=$bdd->query($req_sens);
 							$sens=$res_sens->fetch();
 
-							echo "<fieldset id='affichage'>
+							echo '<fieldset id="affichage">
 							    <legend>Données médicales</legend>
-							    Num: <input type='text' name='num' value='".$sens['num']."' ></br>
-							    Maladie: <input type='text' name='maladie' value='".$sens['caractere']."'></br></fieldset></br>
+							    Num: <input type="text" name="num" value="'.$sens['num'].'" ></br>
+							    Maladie: <input type="text" name="maladie" value="'.$sens['caractere'].'"></br></fieldset></br>
 
-							<input type='submit' name='valid_modif_tutelle' value='VALIDER'>
-							</form>";
+							<input type="submit" name="valid_modif_tutelle" value="VALIDER">
+							</form>';
 						}
 					}
 
@@ -181,15 +191,15 @@
 						if(empty($id)){ header("Location: accueil.php"); exit();}
 						else{
 
-							$nom=htmlspecialchars($_POST['nom']);
-							$prenom=htmlspecialchars($_POST['prenom']);
-							$age=htmlspecialchars($_POST['age']);
-							$adresse=htmlspecialchars($_POST['adresse']);
-							$email=htmlspecialchars($_POST['email']);
-							$pays_naiss=htmlspecialchars($_POST['pays_naiss']);
+							$nom=addslashes(filtrage($_POST['nom']));
+							$prenom=addslashes(filtrage($_POST['prenom']));
+							$age=filtrage($_POST['age']);
+							$adresse=addslashes(filtrage($_POST['adresse']));
+							$email=filtrage($_POST['email']);
+							$pays_naiss=addslashes(filtrage($_POST['pays_naiss']));
 
-							$num=htmlspecialchars($_POST['num']);
-							$maladie=htmlspecialchars($_POST['maladie']);
+							$num=filtrage($_POST['num']);
+							$maladie=addslashes(filtrage($_POST['maladie']));
 
 							$update="UPDATE `handicap`.`patient` SET
 							`nom`='".$nom."',

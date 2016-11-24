@@ -50,15 +50,6 @@
 							<td><b>Action</b></td>
 						</tr>
 						<?php
-							//A MODIFIER POO
-						/*
-							$id=$user->getId();
-							$req_proche="SELECT * FROM `handicap`.`proche` WHERE id='$id'";
-							$res_proche=$bdd->query($req_proche);
-							$proche=$res_proche->fetch();
-							$liste_proches=$proche['id_proches'];*/
-
-
 
 							if(isset($_GET['quitter'])){
 								$user=unserialize($_SESSION['user']);

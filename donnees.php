@@ -93,7 +93,6 @@
 
 						echo "<form action='modif_donnees.php' method='post'>
 						<input type='submit' name='modif' value='Modifier/Ajouter des données'>
-						<input type='submit' name='suppr' value='Supprimer les données'>
 						</form>";
 
 					}
@@ -219,7 +218,6 @@
 
 							echo "<form action='modif_donnees.php' method='post'>
 							<input type='submit' name='modif_tutelle' value='Modifier/Ajouter des données'>
-							<input type='submit' name='suppr' value='Supprimer les données'>
 							</form>";
 
 						}

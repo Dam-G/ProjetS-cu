@@ -13,21 +13,20 @@ if (isset($_POST['deconnexion'])) {
 
 			if(isset($_POST['valid_inscript'])){
 
-				$nom=htmlspecialchars($_POST['nom']);
-				$prenom=htmlspecialchars($_POST['prenom']);
+				$nom=addslashes(htmlspecialchars($_POST['nom']));
+				$prenom=addslashes(htmlspecialchars($_POST['prenom']));
 				$sexe=htmlspecialchars($_POST['sexe']);
 				$age=htmlspecialchars($_POST['age']);
 
 				//$date_naissance=date_to_sql($date_naissance);
 
-				$pays_naissance=htmlspecialchars($_POST['pays_naiss']);
+				$pays_naissance=addslashes(htmlspecialchars($_POST['pays_naiss']));
 				$adresse=addslashes(htmlspecialchars($_POST['adresse']));
 				$email=htmlspecialchars($_POST['email']);
 				$droit=htmlspecialchars($_POST['type_user']);
 				$password=htmlspecialchars($_POST['password']);
 				$verif_passwd=htmlspecialchars($_POST['verif_passwd']);
 				$captcha = htmlspecialchars($_POST['captcha']);
-				$code=mt_rand();
 
 				if (filter_var($email, FILTER_VALIDATE_EMAIL)) $VALIDE=1; //On regarde si c'est une adresse mail valide
 				else $VALIDE=0;
@@ -50,7 +49,7 @@ if (isset($_POST['deconnexion'])) {
 					if($droit==3) $actif=0; //Si c'est un medecin, l'admin doit activer le compte
 					else $actif=1;
 
-					$req="INSERT INTO `handicap`.`authentification` (`email`,`passwd`,`droit`,`actif`, `code`) VALUES ('$email','$passwd_hashe','$droit','$actif','$code')";
+					$req="INSERT INTO `handicap`.`authentification` (`email`,`passwd`,`droit`,`actif`) VALUES ('$email','$passwd_hashe','$droit','$actif')";
 					$reponse= $bdd->query($req);
 
 					$req2="SELECT * FROM `handicap`.`authentification` WHERE passwd='$passwd_hashe'";
@@ -96,30 +95,6 @@ if (isset($_POST['deconnexion'])) {
 					if ($droit==3) echo '<script>alert("Inscription validée, un administrateur doit maintenant activer votre compte");</script>';
 					else echo '<script>alert("Inscription validée !");</script>';
 
-					//MAIL //TOFINISH
-					/*
-					$objet="Confirmation de votre inscription";
-					$contenu='
-						<html>
-						<head>
-						   <title>Vous vous êtes inscrit sur la site de gestion du handicap.</title>
-						</head>
-						<body>
-						   <p>Bonjour Mr/Mme '.$nom.'</p>
-						   <p>Pour valider votre inscription et activer votre compte, veuillez cliquer sur le lien pour valider.</p>
-						   <a href="localhost/ProjetSecu/active.php?code='.$code.'">localhost/ProjetSecu/active.php?code='.$code.'</a>
-						</body>
-						</html>';
-					$entetes =
-					'Content-type: text/html; charset=utf-8' . "\r\n" .
-					'From: email@domain.fr' . "\r\n" .
-					'Reply-To: email@domain.fr' . "\r\n" .
-					'X-Mailer: PHP/' . phpversion();
-					//Envoi du mail
-					mail($email, $objet, $contenu, $entetes);
-
-					*/
-
 				}
 				else{
 					?>
@@ -136,7 +111,7 @@ if (isset($_POST['deconnexion'])) {
 				$res_auth = $bdd->query($req_auth);
 				$line = $res_auth->fetch();
 				if((password_verify($password, $line['passwd'])) && ($line['actif']==1)){
-					//session_start();
+
 					$id=$line['id'];
 					if($line['droit']==1) $table='patient';
 					elseif($line['droit']==2) $table='proche';

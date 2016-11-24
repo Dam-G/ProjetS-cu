@@ -27,12 +27,6 @@
 			$id=$_GET['valid_proche'];
 			$id_patient=$user->getId();
 
-			//A MODIFIER POO
-			/*
-			$req_patient="SELECT * FROM `handicap`.`patient` WHERE id='$id_patient'";
-			$res_patient=$bdd->query($req_patient);
-			$infos_patient=$res_patient->fetch();*/
-
 			$liste_demandeurs=$user->getId_demandeurs();
 
 			if(in_array($id, explode(' ', $liste_demandeurs))){

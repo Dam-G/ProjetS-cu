@@ -22,13 +22,11 @@ function filtrage($texte){
 
 	$texte=strip_tags($texte);
 
-	if(strstr($texte, "<"))
-		$texte=str_replace("<", "&lt;", $texte);
-	if(strstr($texte, ">"))
-		$texte=str_replace(">", "&gt;", $texte);
+	$texte=htmlspecialchars($texte);
 	
 	return $texte;
 }
+
 
 
 ?>
